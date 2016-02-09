@@ -1,0 +1,4 @@
+php: 
+  image: mygento/php5-fpm
+nginx: 
+  image: mygento/nginx

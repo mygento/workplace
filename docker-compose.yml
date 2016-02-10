@@ -1,4 +1,14 @@
 php: 
-  image: mygento/php5-fpm
+  image: mygento/php5
+  links:
+    - nginx
+  ports:
+    - "9000:9000"
+db:
+  image: mygento/mysql
+  ports:
+    - 33306:3306
 nginx: 
   image: mygento/nginx
+  ports: 
+    - "8080:80"

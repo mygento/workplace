@@ -1,14 +1,23 @@
-php: 
-  image: mygento/php5
-  links:
-    - nginx
-  ports:
-    - "9000:9000"
-db:
-  image: mygento/mysql
-  ports:
-    - 33306:3306
-nginx: 
-  image: mygento/nginx
-  ports: 
-    - "8080:80"
+version: "2"
+
+services:
+  web:
+    image: mygento/nginx
+    volumes:
+      - ./public:/var/www/magento
+    ports:
+      - "8080:80"
+    links: 
+      - php
+  php:
+    image: mygento/php5
+    volumes:
+      - ./public:/var/www/magento
+    links:
+      - db
+  db:
+    image: mygento/mysql
+    ports:
+    - "13306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mygento

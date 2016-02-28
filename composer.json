@@ -1,0 +1,9 @@
+{
+    "require": {
+        "magento/core": "~1.9",
+        "aydin-hassan/magento-core-composer-installer": "^1.3"
+    },
+    "extra": {
+        "magento-root-dir": "public"
+    }
+}

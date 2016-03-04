@@ -2,20 +2,24 @@ version: "2"
 
 services:
   web:
+    container_name: nginx_magento
     image: mygento/nginx
     volumes:
       - ./public:/var/www/magento
+      - ./conf/nginx:/etc/nginx/sites-enabled
     ports:
       - "8080:80"
     links: 
       - php
   php:
+    container_name: php_magento
     image: mygento/php5
     volumes:
       - ./public:/var/www/magento
     links:
       - db
   db:
+    container_name: mysql_magento
     image: mygento/mysql
     ports:
       - "13306:3306"

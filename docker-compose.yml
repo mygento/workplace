@@ -3,21 +3,21 @@ version: "2"
 services:
   web:
     container_name: nginx_magento
-    image: mygento/nginx
+    image: mygento/nginx:latest
     volumes:
       - ./public:/var/www/magento
       - ./conf/nginx:/etc/nginx/sites-enabled
     ports:
       - "8080:80"
-    links: 
-      - php
+    networks:
+      - magento
   php:
     container_name: php_magento
-    image: mygento/php5
+    image: mygento/php:5.6
     volumes:
       - ./public:/var/www/magento
-    links:
-      - db
+    networks:
+      - magento
   db:
     container_name: mysql_magento
     image: mygento/mysql
@@ -25,3 +25,8 @@ services:
       - "13306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: mygento
+    networks:
+      - magento
+networks:
+    magento: 
+        driver: overlay

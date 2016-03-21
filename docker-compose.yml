@@ -11,6 +11,8 @@ services:
       - "8080:80"
     networks:
       - magento
+    depends_on:
+      - php
   php:
     container_name: php_magento
     image: mygento/php:5.6

@@ -3,7 +3,7 @@ version: "2"
 services:
   web:
     container_name: nginx_magento
-    image: mygento/nginx:latest
+    image: mygento/nginx:backports
     volumes:
       - ./public:/var/www/magento
       - ./conf/nginx:/etc/nginx/sites-enabled
@@ -23,12 +23,17 @@ services:
   db:
     container_name: mysql_magento
     image: mygento/mysql
+    volumes:
+      - "db-data:/var/lib/mysql"
     ports:
       - "13306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: mygento
     networks:
       - magento
+volumes:
+  db-data:
+
 networks:
-    magento: 
-        driver: overlay
+  magento: 
+    driver: overlay

@@ -1,39 +1,39 @@
-version: "2"
+version: '2'
 
 services:
-  web:
-    container_name: nginx_magento
-    image: mygento/nginx:backports
-    volumes:
-      - ./public:/var/www/magento
-      - ./conf/nginx:/etc/nginx/sites-enabled
-    ports:
-      - "8080:80"
-    networks:
-      - magento
-    depends_on:
-      - php
-  php:
-    container_name: php_magento
-    image: mygento/php:5.6
-    volumes:
-      - ./public:/var/www/magento
-    networks:
-      - magento
-  db:
-    container_name: mysql_magento
-    image: mygento/mysql
-    volumes:
-      - "db-data:/var/lib/mysql"
-    ports:
-      - "13306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: mygento
-    networks:
-      - magento
+    app:
+      build: ./application/.
+      image: mageapp
+      volumes: 
+        - /var/www
+    php:
+      image: mygento/php:5.6-fpm
+      volumes_from: 
+       - app
+      links:
+       - redis
+       - db
+    redis:
+      image: redis
+    nginx:
+      image: mygento/nginx:backports
+      ports:
+       - 8081:80 
+      volumes: 
+        - ./conf/nginx:/etc/nginx/sites-enabled/
+      volumes_from:
+       - app
+      depends_on:
+       - php
+    db:
+      image: mygento/mysql
+      environment:
+       - MYSQL_ROOT_PASSWORD=mygento
+       - MYSQL_DATABASE=magento
+       - MYSQL_USER=mygento
+       - MYSQL_PASSWORD=mygento
+      volumes:
+       - "db-data:/var/lib/mysql"
 volumes:
-  db-data:
-
-networks:
-  magento: 
-    driver: overlay
+    db-data:
+    

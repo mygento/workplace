@@ -1,5 +1,5 @@
 .DS_Store
 vendor
-public
+application/public
 composer.lock
 composer.phar

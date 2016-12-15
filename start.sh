@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
-composer install --no-dev
+composer install
+npm install
 docker-compose build

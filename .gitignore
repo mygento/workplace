@@ -1,7 +1,8 @@
 .DS_Store
 node_modules
 vendor
-application/public/*
-!application/public/.keep
+application/*
+!application/Dockerfile
+!application/composer.json
 composer.lock
 composer.phar

@@ -6,7 +6,7 @@ services:
       build: ./application/.
       image: mageapp
       volumes:
-        - ./application/public:/var/www/public
+        - ./application:/var/www/public
     php:
       container_name: php
       image: mygento/php:5.6-fpm
@@ -15,6 +15,10 @@ services:
       links:
        - redis
        - db
+      env:
+        - ADMIN_USERNAME=admin
+        - ADMIN_URL=backend
+        - APPLICATION_MODE=development
     redis:
       image: redis:3
       container_name: redis

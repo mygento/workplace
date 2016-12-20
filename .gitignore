@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 vendor
-application/public
+application/public/*
+!application/public/.keep
 composer.lock
 composer.phar

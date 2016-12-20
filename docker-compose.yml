@@ -2,28 +2,28 @@ version: '2'
 
 services:
     app:
-      container_name: app
+      container_name: m2-app
       build: ./application/.
       image: mageapp
       volumes:
         - ./application:/var/www/public
     php:
-      container_name: php
+      container_name: m2-php
       image: mygento/php:5.6-fpm
       volumes_from:
        - app
       links:
        - redis
        - db
-      env:
+      environment:
         - ADMIN_USERNAME=admin
         - ADMIN_URL=backend
         - APPLICATION_MODE=development
     redis:
       image: redis:3
-      container_name: redis
+      container_name: m2-redis
     nginx:
-      container_name: nginx
+      container_name: m2-nginx
       image: mygento/nginx:backports
       ports:
        - 8081:80
@@ -34,7 +34,7 @@ services:
       depends_on:
        - php
     db:
-      container_name: db
+      container_name: m2-db
       image: mygento/mysql
       environment:
        - MYSQL_ROOT_PASSWORD=mygento
@@ -42,6 +42,6 @@ services:
        - MYSQL_USER=mygento
        - MYSQL_PASSWORD=mygento
       volumes:
-       - "db-data:/var/lib/mysql"
+       - "m2-db-data:/var/lib/mysql"
 volumes:
-    db-data:
+    m2-db-data:

@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 docker-compose up -d
 chgrp -R www-data application
-# chmod a+w application/public/app/etc
-# chmod -R a+w application/public/media
+chmod -R a+w application/app/etc
+chmod -R a+w application/var
+chmod -R a+w application/pub/media
+chmod -R a+w application/pub/static
 gulp

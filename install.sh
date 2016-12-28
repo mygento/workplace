@@ -5,4 +5,3 @@ sudo usermod -a -G www-data ${USER}
 composer install -d application --ignore-platform-reqs
 npm install
 docker-compose pull
-docker-compose build

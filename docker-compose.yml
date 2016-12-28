@@ -3,8 +3,7 @@ version: '2'
 services:
     app:
       container_name: m2-app
-      build: ./application/.
-      image: mageapp
+      image: luckyraul/docker-dummy
       volumes:
         - ./application:/var/www/public
     php:

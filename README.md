@@ -19,5 +19,6 @@ DB Name: magento
 
 DB user/pass: mygento
 
-docker exec -ti m2-php chmod +x /var/www/public/bin/magento
+RUN magento bin:
+
 docker exec -ti m2-php /var/www/public/bin/magento

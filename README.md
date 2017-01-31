@@ -22,3 +22,7 @@ DB user/pass: mygento
 RUN magento bin:
 
 docker exec -ti m2-php /var/www/public/bin/magento
+
+CHOWN (before start):
+
+sudo chown -R hamster:www-data application/

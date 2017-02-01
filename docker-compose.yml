@@ -35,6 +35,8 @@ services:
     db:
       container_name: m2-db
       image: mygento/mysql
+      ports:
+       - 3306:3306
       environment:
        - MYSQL_ROOT_PASSWORD=mygento
        - MYSQL_DATABASE=magento

@@ -3,6 +3,7 @@ node_modules
 vendor
 application/*
 !application/public
+!application/composer.json
 application/public/*
 !application/public/.keep
 composer.lock

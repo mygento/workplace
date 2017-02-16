@@ -5,7 +5,7 @@ services:
       container_name: m1-app
       image: luckyraul/docker-dummy
       volumes:
-        - ./application/public:/var/www/public
+        - ./application:/var/www
     php:
       container_name: m1-php
       image: mygento/php:5.6-fpm

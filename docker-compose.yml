@@ -25,7 +25,9 @@ services:
       container_name: m2-redis
     nginx:
       container_name: m2-nginx
-      image: mygento/nginx:backports
+      image: luckyraul/nginx:backports
+      environment:
+        - NGINX_USER=$USERID
       ports:
        - 8081:80
       volumes:

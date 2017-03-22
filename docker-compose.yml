@@ -8,7 +8,9 @@ services:
         - ./application:/var/www/public
     php:
       container_name: m2-php
-      image: mygento/php:7.0-fpm
+      image: mygento/php:7.0-full
+      environment:
+        - PHPFPM_USER=$USERID
       volumes_from:
        - app
       links:

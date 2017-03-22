@@ -9,6 +9,8 @@ services:
     php:
       container_name: m1-php
       image: mygento/php:5.6-full
+      environment:
+        - PHPFPM_USER="${id -u $USER}"
       volumes_from:
        - app
       links:

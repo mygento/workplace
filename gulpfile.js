@@ -2,7 +2,7 @@ var gulp  = require('gulp');
 var watch = require('gulp-watch');
 
 var source = './src';
-var destination = './application/public';
+var destination = './application';
 
 gulp.task('watch-folder', function() {
   gulp.src(source + '/**/*', {base: source})

@@ -8,9 +8,7 @@ services:
         - ./application:/var/www/public
     php:
       container_name: m2-php
-      image: mygento/php:7.0-full
-      environment:
-        - PHPFPM_USER=$USERID
+      image: mygento/php:7.0-full             
       volumes_from:
        - app
       links:
@@ -20,6 +18,7 @@ services:
         - ADMIN_USERNAME=admin
         - ADMIN_URL=backend
         - APPLICATION_MODE=development
+        - PHPFPM_USER=$USERID
     redis:
       image: redis:3
       container_name: m2-redis

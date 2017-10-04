@@ -8,7 +8,7 @@ services:
         - ./application:/var/www/public
     php:
       container_name: m2-php
-      image: mygento/php:7.0-full             
+      image: mygento/php:7.1-full             
       volumes_from:
        - app
       links:

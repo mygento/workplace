@@ -18,3 +18,5 @@ DB HOST: db
 DB Name: magento
 
 DB user/pass: mygento
+
+docker exec -ti -u www-data m1-php /var/www/public/

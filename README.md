@@ -20,3 +20,5 @@ DB Name: magento
 DB user/pass: mygento
 
 docker exec -ti -u www-data m1-php /var/www/public/
+
+stop/remove all Docker containers: docker rm $(docker ps -a -q)

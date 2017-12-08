@@ -1,9 +1,9 @@
 # Magento Local worker image
 
 
-PHP [![](https://images.microbadger.com/badges/image/mygento/php:5.6-fpm.svg)](https://microbadger.com/images/mygento/php:5.6-fpm)
+PHP [![](https://images.microbadger.com/badges/image/mygento/php:7.1-fpm.svg)](https://microbadger.com/images/mygento/php:7.1-fpm)
 
-NGINX [![](https://images.microbadger.com/badges/image/mygento/nginx:backports.svg)](https://microbadger.com/images/mygento/nginx:backports)
+NGINX [![](https://images.microbadger.com/badges/image/luckyraul/nginx:backports.svg)](https://microbadger.com/images/luckyraul/nginx:backports)
 
 MYSQL
 [![](https://images.microbadger.com/badges/image/mygento/mysql:5.6.svg)](https://microbadger.com/images/mygento/mysql:5.6)

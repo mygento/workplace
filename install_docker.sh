@@ -7,7 +7,7 @@ sudo apt-get -qq update && sudo apt-get install -qqy docker-ce
 sudo groupadd docker
 sudo gpasswd -a ${USER} docker
 sudo service docker restart
-wget "https://github.com/docker/compose/releases/download/1.12.0/docker-compose-$(uname -s)-$(uname -m)" -O docker-compose
+wget "https://github.com/docker/compose/releases/download/1.18.0/docker-compose-$(uname -s)-$(uname -m)" -O docker-compose
 sudo mv docker-compose /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 sudo usermod -a -G www-data ${USER}

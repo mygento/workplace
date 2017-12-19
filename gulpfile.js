@@ -10,7 +10,8 @@ gulp.task('watch-folder', function() {
      `!${source}/node_modules`,
      `!${source}/vendor`,
      `!${source}/setup`,
-     `!${source}/dev`
+     `!${source}/dev`,
+     `!${source}/composer.lock`,
     ], {base: source})
     .pipe(watch(source, {base: source}))
     .pipe(gulp.dest(destination));

@@ -8,10 +8,10 @@ var destination = './application';
 gulp.task('watch-folder', function() {
   gulp.src([
      `${source}/**/*`,
-     `!${source}/node_modules`,
-     `!${source}/vendor`,
-     `!${source}/setup`,
-     `!${source}/dev`,
+     `!${source}/node_modules/**/*`,
+     `!${source}/vendor/**/*`,
+     `!${source}/setup/**/*`,
+     `!${source}/dev/**/*`,
      `!${source}/composer.lock`,
     ], {base: source})
     .pipe(debug())

@@ -8,11 +8,6 @@ NGINX [![](https://images.microbadger.com/badges/image/luckyraul/nginx:backports
 MYSQL
 [![](https://images.microbadger.com/badges/image/mygento/mysql:5.6.svg)](https://microbadger.com/images/mygento/mysql:5.6)
 
-
-REDIS
-[![](https://images.microbadger.com/badges/image/redis:3.svg)](https://microbadger.com/images/redis:3)
-
-
 DB HOST: db
 
 DB Name: magento

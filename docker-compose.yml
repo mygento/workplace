@@ -8,20 +8,16 @@ services:
         - ./application:/var/www/public
     php:
       container_name: m2-php
-      image: mygento/php:7.1-full             
+      image: mygento/php:7.1-full
       volumes_from:
        - app
       links:
-       - redis
        - db
       environment:
         - ADMIN_USERNAME=admin
         - ADMIN_URL=backend
         - APPLICATION_MODE=development
         - PHPFPM_USER=$USERID
-    redis:
-      image: redis:3
-      container_name: m2-redis
     nginx:
       container_name: m2-nginx
       image: luckyraul/nginx:backports

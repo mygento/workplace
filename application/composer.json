@@ -5,6 +5,7 @@
     }],
     "require": {
         "magento/product-community-edition": "~2.2",
+        "mygento/module-configsync": "~2.2",
         "etws/magento-language-ru_ru":"dev-develop",
         "composer/composer": "1.4.1"
     },

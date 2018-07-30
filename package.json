@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "gulp": "^3.9.1",
-    "gulp-debug": "^3.1.0",
-    "gulp-watch": "^4.3.11"
+    "gulp": "^4.0.0",
+    "gulp-debug": "^4.0.0",
+    "gulp-watch": "^5.0.1"
   }
 }

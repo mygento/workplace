@@ -1,10 +1,10 @@
-var gulp  = require('gulp');
-var watch = require('gulp-watch');
-var debug = require('gulp-debug');
+const gulp  = require('gulp');
+const watch = require('gulp-watch');
+const debug = require('gulp-debug');
 
-var source = './src';
-var destination = './application';
-var paths = [
+const source = './src';
+const destination = './application';
+const paths = [
   `${source}/**/*`,
   `!${source}/.git/**/*`,
   `!${source}/node_modules/**/*`,
@@ -14,11 +14,10 @@ var paths = [
   `!${source}/composer.lock`,
 ];
 
-gulp.task('watch-folder', function() {
-  gulp.src(paths, { base: source})
+gulp.task('watch-folder', () => gulp.src(paths, { base: source})
     .pipe(debug())
     .pipe(watch(paths, { base: source, verbose: true }))
-    .pipe(gulp.dest(destination));
-});
+    .pipe(gulp.dest(destination))
+);
 
-gulp.task('default', ['watch-folder']);
+gulp.task('default', gulp.series('watch-folder'));

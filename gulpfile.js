@@ -6,7 +6,7 @@ const source = './src';
 const destination = './application';
 const paths = [
   `${source}/**/*`,
-  `!${source}/.git/**/*`,
+  `!${source}/.*/**/*`,
   `!${source}/node_modules/**/*`,
   `!${source}/vendor/**/*`,
   `!${source}/setup/**/*`,

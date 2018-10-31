@@ -12,6 +12,7 @@ const paths = [
   `!${source}/setup/**/*`,
   `!${source}/dev/**/*`,
   `!${source}/composer.lock`,
+  `!${source}/app/etc/di.xml`,
 ];
 
 gulp.task('watch-folder', () => gulp.src(paths, { base: source})

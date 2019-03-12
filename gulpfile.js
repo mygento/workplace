@@ -7,10 +7,14 @@ const destination = './application';
 const paths = [
   `${source}/**/*`,
   `!${source}/.*/**/*`,
+  `${source}/.php_cs`,
   `!${source}/node_modules/**/*`,
-  `!${source}/vendor/**/*`,
-  `!${source}/setup/**/*`,
   `!${source}/dev/**/*`,
+  `!${source}/generated/**/*`,
+  `!${source}/lib/**/*`,
+  `!${source}/setup/**/*`,
+  `!${source}/phpserver/**/*`,
+  `!${source}/vendor/**/*`,
   `!${source}/composer.lock`,
   `!${source}/app/etc/di.xml`,
 ];

@@ -14,8 +14,6 @@ services:
       links:
        - db
       environment:
-        - ADMIN_USERNAME=admin
-        - ADMIN_URL=backend
         - APPLICATION_MODE=development
         - PHPFPM_USER=$USERID
     nginx:

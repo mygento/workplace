@@ -19,9 +19,9 @@ const paths = [
   `!${source}/app/etc/di.xml`,
 ];
 
-gulp.task('watch-folder', () => gulp.src(paths, { base: source})
+gulp.task('watch-folder', () => gulp.src(paths, { base: source, allowEmpty: true })
     .pipe(debug())
-    .pipe(watch(paths, { base: source, verbose: true }))
+    .pipe(watch(paths, { base: source, verbose: true, allowEmpty: true }))
     .pipe(gulp.dest(destination))
 );
 

@@ -5,5 +5,6 @@ if [ -f ./src/auth.json ]; then
 fi
 rm -f application/composer.lock
 composer install -d application --ignore-platform-reqs
+cp application/composer.lock src/composer.lock
 npm install
 docker-compose pull

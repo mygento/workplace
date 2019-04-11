@@ -3,28 +3,24 @@ version: '2'
 services:
     app:
       container_name: m2-app
-      build: ./application/.
-      image: mageapp
+      image: luckyraul/docker-dummy
       volumes:
         - ./application:/var/www/public
     php:
       container_name: m2-php
-      image: mygento/php:5.6-fpm
+      image: mygento/php:7.1-full
       volumes_from:
        - app
       links:
-       - redis
        - db
       environment:
-        - ADMIN_USERNAME=admin
-        - ADMIN_URL=backend
         - APPLICATION_MODE=development
-    redis:
-      image: redis:3
-      container_name: m2-redis
+        - PHPFPM_USER=$USERID
     nginx:
       container_name: m2-nginx
-      image: mygento/nginx:backports
+      image: luckyraul/nginx:backports
+      environment:
+        - NGINX_USER=$USERID
       ports:
        - 8081:80
       volumes:
@@ -36,6 +32,9 @@ services:
     db:
       container_name: m2-db
       image: mygento/mysql
+      command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --innodb_file_per_table
+      ports:
+       - 3306:3306
       environment:
        - MYSQL_ROOT_PASSWORD=mygento
        - MYSQL_DATABASE=magento

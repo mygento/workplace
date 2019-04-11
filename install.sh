@@ -1,8 +1,10 @@
 #!/usr/bin/env sh
-sudo groupadd -g 33 www-data
-sudo useradd --uid 33 --gid 33 -d /var/www/ -s /bin/sh www-data
-sudo usermod -a -G www-data ${USER}
+export USERID=$(id -u)
+if [ -f ./src/auth.json ]; then
+    cp ./src/auth.json application
+fi
+rm -f application/composer.lock
 composer install -d application --ignore-platform-reqs
+cp application/composer.lock src/composer.lock
 npm install
 docker-compose pull
-docker-compose build

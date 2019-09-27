@@ -28,6 +28,7 @@ console.log('package.json', config.workplace);
 console.log('real', workplaceConfig);
 
 const { watchStyles, watchLive } = require('./watch');
+const { lintStyle, lintJs } = require('./lint');
 const { composeStart } = require('./docker');
 const style = require('./style');
 
@@ -42,6 +43,17 @@ liveTask.displayName = 'livereload';
 const dockerTask = (cb) => composeStart(cb, workplaceConfig);
 dockerTask.displayName = 'docker';
 
+const lintJsTask = () => lintJs(
+  config.workplace.theme.map(f => resolveApp(f))
+);
+lintJsTask.displayName = 'js lint';
+
+const lintStyleTask = () => lintStyle(
+  config.workplace.theme.map(f => resolveApp(f)),
+  workplaceConfig
+);
+lintStyleTask.displayName = 'style lint';
+
 const result = Object.assign({
   someMagic: function(cb) {
     cb();
@@ -49,7 +61,9 @@ const result = Object.assign({
   start: gulp.parallel(
     watchTask,
     liveTask,
-    dockerTask
+    dockerTask,
+    lintJsTask,
+    lintStyleTask
   ),
 }, style);
 

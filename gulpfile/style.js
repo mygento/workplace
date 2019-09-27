@@ -19,7 +19,7 @@ exports.compileStyle = (files, cssOptions = {}) => {
   ],
   };
 
-  return gulp.src(files)
+  return gulp.src(files, { allowEmpty: true })
     .pipe(debug())
     .pipe(notProduction ? sourcemaps.init() : noop())
     // .pipe(notProduction ? sassInheritance({ dir: scss_folder }) : noop())

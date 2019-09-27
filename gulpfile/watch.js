@@ -1,20 +1,15 @@
-const gulp = require('gulp');
-const livereload = require('gulp-livereload');
-
-const { compileStyle } = require('./style');
-
-exports.watchStyles = (styleFolders) => {
+exports.watchStyles = (files) => {
+  const gulp = require('gulp');
   console.log('start watch gulpfile');
-  const files = styleFolders.map((f) => `${f}/**/*.scss`);
-  const styleFunc = () => compileStyle(files);
-  styleFunc.displayName = 'regenerate scss';
+  const { styleTask } = require('./tasks');
   return gulp.watch(
     files,
-    gulp.series(styleFunc)
+    gulp.series(styleTask)
   );
 };
 
 exports.watchLive = () => {
+  const livereload = require('gulp-livereload');
   console.log('start livereload');
   livereload.listen();
 };

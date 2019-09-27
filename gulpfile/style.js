@@ -20,7 +20,7 @@ exports.compileStyle = (files, cssOptions = {}) => {
   };
 
   return gulp.src(files, { allowEmpty: true })
-    .pipe(debug())
+    .pipe(debug({ title: 'style' }))
     .pipe(notProduction ? sourcemaps.init() : noop())
     // .pipe(notProduction ? sassInheritance({ dir: scss_folder }) : noop())
     .pipe(sass(includeOpt).on('error', sass.logError))

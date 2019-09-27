@@ -31,7 +31,9 @@
     "node-normalize-scss": "^8.0.1",
     "require-dir": "^1.2.0",
     "sassime": "^1.1.6",
-    "stylelint": "^10.0.0"
+    "stylelint": "^10.0.0",
+    "stylelint-config-standard": "^19.0.0",
+    "stylelint-scss": "^3.11.1"
   },
   "devDependencies": {
     "eslint-config-gulp": "^3.0.1"

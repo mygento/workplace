@@ -1,7 +1,10 @@
 const gulp = require('gulp');
 
 const {
-  watchTask, liveTask, dockerTask, lintJsTask, lintStyleTask, styleTask,
+  watchTask, liveTask, styleTask,
+  dockerTask,
+  lintJsTask, lintStyleTask,
+  fixStyleTask,
 } = require('./tasks');
 
 const style = require('./style');
@@ -10,6 +13,10 @@ const result = Object.assign({
   someMagic: function(cb) {
     cb();
   },
+  test: gulp.parallel(
+    // lintJsTask,
+    fixStyleTask
+  ),
   start: gulp.parallel(
     styleTask,
     watchTask,

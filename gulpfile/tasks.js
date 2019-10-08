@@ -1,7 +1,7 @@
 const { appConfig, workplaceConfig, resolveApp } = require('./config');
 
 const { watchStyles, watchLive } = require('./watch');
-const { lintStyle, lintJs } = require('./lint');
+const { lintStyle, lintJs, fixStyle } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeStart } = require('./docker');
 
@@ -43,6 +43,11 @@ const lintStyleTask = () => lintStyle(
 );
 lintStyleTask.displayName = 'style lint';
 
+const fixStyleTask = () => fixStyle(
+  lintStyleGlob.map((f) => `${f}/**/*.scss`)
+);
+fixStyle.displayName = 'style lint autofix';
+
 const styleTask = () => compileStyle(styleGlob.map((f) => `${f}/**/*.scss`));
 styleTask.displayName = 'scss';
 
@@ -52,3 +57,4 @@ exports.dockerTask = dockerTask;
 exports.watchTask = watchTask;
 exports.liveTask = liveTask;
 exports.styleTask = styleTask;
+exports.fixStyleTask = fixStyleTask;

@@ -17,6 +17,23 @@ exports.lintStyle = (files, fail = false) => {
     }));
 };
 
+exports.fixStyle = (files) => {
+  console.log('lint style', files);
+  const gulpStylelint = require('gulp-stylelint');
+  return gulp.src(files, { allowEmpty: true, base: '.' })
+    .pipe(debug({ title: 'lint Style' }))
+    .pipe(gulpStylelint({
+      // debug: true,
+      failAfterError: true,
+      fix: true,
+      reporters: [
+        { formatter: 'verbose', console: true },
+        { formatter: 'string', console: true },
+      ],
+    }))
+    .pipe(gulp.dest('.'));
+};
+
 exports.lintJs = (files, jsOptions = {}) => {
   console.log('lint js', files);
   const eslint = require('gulp-eslint');

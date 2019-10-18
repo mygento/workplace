@@ -18,7 +18,7 @@ exports.lintStyle = (files, fail = false) => {
 };
 
 exports.fixStyle = (files) => {
-  console.log('lint style', files);
+  console.log('lint style autofix', files);
   const gulpStylelint = require('gulp-stylelint');
   return gulp.src(files, { allowEmpty: true, base: '.' })
     .pipe(debug({ title: 'lint Style' }))
@@ -39,7 +39,33 @@ exports.lintJs = (files, jsOptions = {}) => {
   const eslint = require('gulp-eslint');
   return gulp.src(files, { allowEmpty: true })
     .pipe(debug({ title: 'lint Js' }))
-    .pipe(eslint())
+    .pipe(eslint({
+      baseConfig: {
+        extends: ['eslint:recommended'],
+      },
+      rules: {
+        semi: ['error', 'always'],
+      },
+    }))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
+};
+
+exports.fixJs = (files) => {
+  console.log('lint js autofix', files);
+  const eslint = require('gulp-eslint');
+  return gulp.src(files, { allowEmpty: true, base: '.' })
+    .pipe(debug({ title: 'lint Js' }))
+    .pipe(eslint({
+      fix: true,
+      baseConfig: {
+        extends: ['eslint:recommended'],
+      },
+      rules: {
+        semi: ['error', 'always'],
+      },
+    }))
+    .pipe(eslint.format())
+    // .pipe(eslint.failAfterError())
+    .pipe(gulp.dest('.'));
 };

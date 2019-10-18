@@ -1,6 +1,9 @@
 const { appConfig, workplaceConfig, resolveApp } = require('./config');
 
-const { watchStyles, watchLive } = require('./watch');
+const { watchStyles,
+  watchLintStyles, watchLintJs,
+  watchLive,
+} = require('./watch');
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeStart } = require('./docker');
@@ -23,11 +26,20 @@ const lintStyleGlob = [...styleGlob, ...styleGlob.map(f => `!${f}/vendor`)];
 console.log('lintStyleGlob', lintStyleGlob);
 
 // Tasks
-const watchTask = () => watchStyles(
-  styleGlob.map((f) => `${f}/**/*.scss`),
-  workplaceConfig
+const watchStylesTask = () => watchStyles(
+  styleGlob.map((f) => `${f}/**/*.scss`)
 );
-watchTask.displayName = 'watch';
+watchStylesTask.displayName = 'watch style';
+
+const watchLintStylesTask = () => watchLintStyles(
+  lintStyleGlob.map((f) => `${f}/**/*.scss`)
+);
+watchLintStylesTask.displayName = 'watch lint scss';
+
+const watchLintJsTask = () => watchLintJs(
+  lintJsGlob.map((f) => `${f}/**/*.js`)
+);
+watchLintJsTask.displayName = 'watch lint js';
 
 const liveTask = () => watchLive();
 liveTask.displayName = 'livereload';
@@ -38,7 +50,6 @@ dockerTask.displayName = 'docker';
 const styleTask = () => compileStyle(styleGlob.map((f) => `${f}/**/*.scss`));
 styleTask.displayName = 'scss';
 
-console.log(lintJsGlob.map((f) => `${f}/**/*.js`));
 const lintJsTask = () => lintJs(lintJsGlob.map((f) => `${f}/**/*.js`));
 lintJsTask.displayName = 'js lint';
 
@@ -60,7 +71,9 @@ fixJsTask.displayName = 'js lint autofix';
 exports.lintStyleTask = lintStyleTask;
 exports.lintJsTask = lintJsTask;
 exports.dockerTask = dockerTask;
-exports.watchTask = watchTask;
+exports.watchStylesTask = watchStylesTask;
+exports.watchLintStylesTask = watchLintStylesTask;
+exports.watchLintJsTask = watchLintJsTask;
 exports.liveTask = liveTask;
 exports.styleTask = styleTask;
 exports.fixStyleTask = fixStyleTask;

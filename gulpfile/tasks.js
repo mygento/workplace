@@ -9,7 +9,7 @@ const styleGlob = appConfig.workplace.theme.map(f => resolveApp(`${f}/scss`));
 console.log('styleGlob', styleGlob);
 
 const lintJsGlob = [
-  [
+  ...[
     resolveApp('app/code'),
     '!node_modules',
     `!${resolveApp('app/code')}/**/web/js/vendor/`,

@@ -41,7 +41,7 @@ exports.lintJs = (files, jsOptions = {}) => {
     .pipe(debug({ title: 'lint Js' }))
     .pipe(eslint({
       baseConfig: {
-        extends: ['eslint:recommended'],
+        extends: ['mygento'],
       },
       rules: {
         semi: ['error', 'always'],
@@ -59,7 +59,7 @@ exports.fixJs = (files) => {
     .pipe(eslint({
       fix: true,
       baseConfig: {
-        extends: ['eslint:recommended'],
+        extends: ['mygento'],
       },
       rules: {
         semi: ['error', 'always'],

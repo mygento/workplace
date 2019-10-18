@@ -21,7 +21,7 @@ const result = Object.assign({
     styleTask,
     watchTask,
     liveTask,
-    dockerTask,
+    // dockerTask,
     lintJsTask,
     lintStyleTask
   ),

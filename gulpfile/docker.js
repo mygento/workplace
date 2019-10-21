@@ -76,11 +76,13 @@ exports.composeStart = (cb, config) => {
     { stdio: 'inherit' }
   );
   cmd.on('close', function(code) {
-    console.log('my-task exited with code ' + code);
+    if (code !== 0) {
+      console.log('docker exited on close with code ' + code);
+    }
     cb(code);
   });
   cmd.on('error', function(code) {
-    console.log('my-task exited with code ' + code);
+    console.log('docker exited on error with code ' + code);
     cb(code);
   });
 };

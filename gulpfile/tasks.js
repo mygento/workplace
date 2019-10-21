@@ -15,10 +15,11 @@ const lintJsGlob = [
   ...[
     resolveApp('app/code'),
     '!node_modules',
-    `!${resolveApp('app/code')}/**/web/js/vendor/`,
+    `!${resolveApp('app/code')}/**/web/js/vendor`,
   ],
   ...appConfig.workplace.theme.map(f => resolveApp(f)),
-  ...appConfig.workplace.theme.map(f => `!${resolveApp(`${f}/web/mage/`)}`),
+  ...appConfig.workplace.theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
+  ...appConfig.workplace.theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
 ];
 console.log('lintJsGlob', lintJsGlob);
 

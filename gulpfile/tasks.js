@@ -48,7 +48,11 @@ liveTask.displayName = 'livereload';
 const dockerTask = (cb) => composeStart(cb, workplaceConfig);
 dockerTask.displayName = 'docker';
 
-const styleTask = () => compileStyle(styleGlob.map((f) => `${f}/**/*.scss`));
+const styleTask = () => compileStyle(
+  styleGlob.map((f) => `${f}/**/*.scss`),
+  styleTask,
+  appConfig.workplace.theme.map(f => resolveApp(f))
+);
 styleTask.displayName = 'scss';
 
 const lintJsTask = () => lintJs(lintJsGlob.map((f) => `${f}/**/*.js`));

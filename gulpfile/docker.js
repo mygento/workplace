@@ -2,7 +2,12 @@ const spawn = require('child_process').spawn;
 const path = require('path');
 const fs = require('fs');
 
+const getVolumeName = (projectType) => `${projectType}-db-data`;
+
+const projectTypes = ['magento2', 'symfony'];
+
 const fileTemplate = (
+  projectType,
   projectRoot,
   workplaceRoot,
   projectName,
@@ -18,7 +23,7 @@ const fileTemplate = (
       container_name: `${projectName}-php`,
       image: phpImage,
       links: ['db'],
-      volumes: [`${projectRoot}:/var/www/public`],
+      volumes: [`${projectRoot}:/var/www/${projectType}`],
       environment: ['PHPFPM_USER=$USERID'],
       depends_on: ['db'],
     },
@@ -28,7 +33,7 @@ const fileTemplate = (
       environment: ['NGINX_USER=$USERID'],
       volumes: [
         `${workplaceRoot}:/etc/nginx/sites-enabled/`,
-        `${projectRoot}:/var/www/public`,
+        `${projectRoot}:/var/www/${projectType}`,
       ],
       ports: [`${nginxPort}:80`],
       depends_on: ['php'],
@@ -42,26 +47,32 @@ const fileTemplate = (
       ports: [`${dbPort}:3306`],
       environment: [
         'MYSQL_ROOT_PASSWORD=mygento',
-        'MYSQL_DATABASE=magento',
+        `MYSQL_DATABASE=${projectType}`,
         'MYSQL_USER=mygento',
         'MYSQL_PASSWORD=mygento',
       ],
-      volumes: ['m2-db-data:/var/lib/mysql'],
+      volumes: [`${getVolumeName(projectType)}:/var/lib/mysql`],
     },
   },
   volumes: {
-    'm2-db-data': {},
+    [getVolumeName(projectType)]: {},
   },
 }, null, 2);
 
 exports.composeStart = (cb, config) => {
+  if (!projectTypes.includes(config.type)) {
+    return cb();
+  }
+
   process.env.COMPOSE_PROJECT_NAME = config.projectName;
   process.env.USERID = require('os').userInfo().uid;
+
   fs.writeFileSync(
     'docker-compose.json',
     fileTemplate(
+      config.type,
       config.appDirectory,
-      path.resolve('../nginx/'),
+      path.resolve(`../nginx/${config.type}`),
       config.projectName,
       config.php,
       config.nginx.image,

@@ -4,18 +4,19 @@ const appDirectory = fs.realpathSync(process.env.PWD);
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 const config = require(resolveApp('package.json'));
 
-
 const workplaceConfig = Object.assign({}, {
   projectName: 'workplace',
+  type: config.workplace.type || 'magento2',
+  theme: config.workplace.theme || [],
   php: 'mygento/php:7.2-full',
   nginx: Object.assign({
     image: 'luckyraul/nginx:backports',
     port: 8081,
-  }, config.nginx || {}),
+  }, config.workplace.nginx || {}),
   mysql: Object.assign({
-    image: 'mygento/mysql',
+    image: 'mygento/mysql:5.7',
     port: 3306,
-  }, config.mysql || {}),
+  }, config.workplace.mysql || {}),
 });
 
 workplaceConfig.appDirectory = appDirectory;

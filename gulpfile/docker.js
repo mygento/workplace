@@ -97,3 +97,28 @@ exports.composeStart = (cb, config) => {
     cb(code);
   });
 };
+
+exports.composeStop = (cb, config) => {
+  if (!projectTypes.includes(config.type)) {
+    return cb();
+  }
+
+  process.env.COMPOSE_PROJECT_NAME = config.projectName;
+  process.env.USERID = require('os').userInfo().uid;
+
+  const cmd = spawn(
+    'docker-compose',
+    ['-f','docker-compose.json', 'stop'],
+    { stdio: 'inherit' }
+  );
+  cmd.on('close', function(code) {
+    if (code !== 0) {
+      console.log('docker exited on close with code ' + code);
+    }
+    cb(code);
+  });
+  cmd.on('error', function(code) {
+    console.log('docker exited on error with code ' + code);
+    cb(code);
+  });
+};

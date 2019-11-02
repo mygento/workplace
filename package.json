@@ -2,7 +2,7 @@
   "name": "mage-workplace",
   "version": "1.0.0beta3",
   "description": "Magento Workplace",
-  "main": "index.js",
+  "main": "bin/workplace.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mygento/workplace.git"

@@ -59,7 +59,41 @@ const fileTemplate = (
   },
 }, null, 2);
 
-exports.composeStart = (cb, config) => {
+
+const runCommand = (command, config, cb) => {
+  fs.writeFileSync(
+    'docker-compose.json',
+    fileTemplate(
+      config.type,
+      config.appDirectory,
+      path.resolve(`../nginx/${config.type}`),
+      config.projectName,
+      config.php,
+      config.nginx.image,
+      config.nginx.port,
+      config.mysql.image,
+      config.mysql.port
+    )
+  );
+
+  const cmd = spawn(
+    'docker-compose',
+    ['-f','docker-compose.json', ...command],
+    { stdio: 'inherit' }
+  );
+  cmd.on('close', function(code) {
+    if (code !== 0) {
+      console.log('docker exited on close with code ' + code);
+    }
+    cb(code);
+  });
+  cmd.on('error', function(code) {
+    console.log('docker exited on error with code ' + code);
+    cb(code);
+  });
+};
+
+exports.composeCommand = (cb, command, config) => {
   if (!projectTypes.includes(config.type)) {
     return cb();
   }
@@ -81,44 +115,6 @@ exports.composeStart = (cb, config) => {
       config.mysql.port
     )
   );
-  const cmd = spawn(
-    'docker-compose',
-    ['-f','docker-compose.json', 'up', '-d'],
-    { stdio: 'inherit' }
-  );
-  cmd.on('close', function(code) {
-    if (code !== 0) {
-      console.log('docker exited on close with code ' + code);
-    }
-    cb(code);
-  });
-  cmd.on('error', function(code) {
-    console.log('docker exited on error with code ' + code);
-    cb(code);
-  });
-};
 
-exports.composeStop = (cb, config) => {
-  if (!projectTypes.includes(config.type)) {
-    return cb();
-  }
-
-  process.env.COMPOSE_PROJECT_NAME = config.projectName;
-  process.env.USERID = require('os').userInfo().uid;
-
-  const cmd = spawn(
-    'docker-compose',
-    ['-f','docker-compose.json', 'stop'],
-    { stdio: 'inherit' }
-  );
-  cmd.on('close', function(code) {
-    if (code !== 0) {
-      console.log('docker exited on close with code ' + code);
-    }
-    cb(code);
-  });
-  cmd.on('error', function(code) {
-    console.log('docker exited on error with code ' + code);
-    cb(code);
-  });
+  runCommand(command, config, cb);
 };

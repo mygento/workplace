@@ -17,6 +17,8 @@ const script = scriptIndex === -1 ? args[0] : args[scriptIndex];
 switch (script) {
   case 'build':
   case 'test':
+  case 'stop':
+  case 'delete':
   case 'start': {
     const result = spawn.sync(
       'gulp',

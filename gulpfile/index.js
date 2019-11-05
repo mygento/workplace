@@ -3,7 +3,7 @@ const gulp = require('gulp');
 const {
   watchStylesTask, watchLintStylesTask, watchLintJsTask,
   styleTask,
-  dockerTask, liveTask, stopDockerTask,
+  startDockerTask, liveTask, stopDockerTask, rmDockerTask,
   lintJsTask, lintStyleTask,
   fixStyleTask, fixJsTask,
 } = require('./tasks');
@@ -17,6 +17,9 @@ const result = Object.assign({
   stop: gulp.parallel(
     stopDockerTask
   ),
+  delete: gulp.parallel(
+    rmDockerTask
+  ),
   test: gulp.parallel(
     fixJsTask,
     fixStyleTask
@@ -27,7 +30,7 @@ const result = Object.assign({
     watchLintStylesTask,
     watchLintJsTask,
     liveTask,
-    // dockerTask,
+    startDockerTask,
     lintJsTask,
     lintStyleTask
   ),

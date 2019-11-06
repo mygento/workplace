@@ -17,7 +17,8 @@ const result = Object.assign({
   stop: gulp.parallel(
     stopDockerTask
   ),
-  delete: gulp.parallel(
+  delete: gulp.series(
+    stopDockerTask,
     rmDockerTask
   ),
   test: gulp.parallel(

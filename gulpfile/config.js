@@ -8,7 +8,7 @@ const workplaceConfig = Object.assign({}, {
   projectName: 'workplace',
   type: config.workplace.type || 'magento2',
   theme: config.workplace.theme || [],
-  php: 'mygento/php:7.2-full',
+  php: config.workplace.php || 'mygento/php:7.2-full',
   nginx: Object.assign({
     image: 'luckyraul/nginx:backports',
     port: 8081,

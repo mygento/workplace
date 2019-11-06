@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const getVolumeName = (projectType) => `${projectType}-db-data`;
 
-const projectTypes = ['magento2', 'symfony'];
+const projectTypes = ['magento1', 'magento2', 'symfony'];
 
 const fileTemplate = (
   projectType,

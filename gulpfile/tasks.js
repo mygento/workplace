@@ -7,6 +7,7 @@ const { watchStyles,
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeCommand } = require('./docker');
+const { composerCommand } = require('./composer');
 
 const styleGlob = workplaceConfig.theme.map(f => resolveApp(`${f}/scss`));
 console.log('styleGlob', styleGlob);
@@ -114,12 +115,18 @@ const fixJsTask = (cb) => {
 fixJsTask.displayName = 'js lint autofix';
 
 // Docker
-const startDockerTask = (cb) => composeCommand(cb, ['up', '-d'], workplaceConfig);
+const startDockerTask = (cb) => composeCommand(
+  cb, ['up', '-d'], workplaceConfig
+);
 startDockerTask.displayName = 'docker';
 const stopDockerTask  = (cb) => composeCommand(cb, ['stop'], workplaceConfig);
 stopDockerTask.displayName = 'docker';
 const rmDockerTask  = (cb) => composeCommand(cb, ['rm'], workplaceConfig);
 rmDockerTask.displayName = 'docker';
+
+const composerInstallTask = (cb) => composerCommand(
+  cb, 'install', workplaceConfig
+);
 
 exports.lintStyleTask = lintStyleTask;
 exports.lintJsTask = lintJsTask;
@@ -133,3 +140,4 @@ exports.liveTask = liveTask;
 exports.styleTask = styleTask;
 exports.fixStyleTask = fixStyleTask;
 exports.fixJsTask = fixJsTask;
+exports.composerTask = composerInstallTask;

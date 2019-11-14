@@ -6,15 +6,16 @@ const {
   startDockerTask, liveTask, stopDockerTask, rmDockerTask,
   lintJsTask, lintStyleTask,
   fixStyleTask, fixJsTask,
+  composerTask,
 } = require('./tasks');
 
 const style = require('./style');
 
 const result = Object.assign({
-  someMagic: function(cb) {
-    cb();
-  },
-  stop: gulp.parallel(
+  install: gulp.series(
+    composerTask
+  ),
+  stop: gulp.series(
     stopDockerTask
   ),
   delete: gulp.series(

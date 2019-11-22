@@ -1,9 +1,19 @@
-const { workplaceConfig, resolveApp } = require('./config');
+const path = require('path');
+const fs = require('fs');
+const appDirectory = fs.realpathSync(process.env.PWD);
+const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+const config = require(resolveApp('package.json'));
+
+const { mergeConfig } = require('./config');
+const workplaceConfig = mergeConfig(config, appDirectory);
+
+console.log('real', workplaceConfig);
 
 const { watchStyles,
   watchLintStyles, watchLintJs,
   watchLive,
 } = require('./watch');
+
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeCommand } = require('./docker');

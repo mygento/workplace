@@ -5,7 +5,6 @@ const mergeConfig = (config, appDirectory) => {
   const workplaceConfig = Object.assign({ appDirectory: appDirectory }, {
     projectName: config.name ? config.name : 'workplace',
     type: config.workplace.type || 'magento2',
-    theme: config.workplace.theme || [],
     php: config.workplace.php || 'mygento/php:7.2-full',
     nginx: Object.assign({
       image: 'luckyraul/nginx:backports',
@@ -16,6 +15,9 @@ const mergeConfig = (config, appDirectory) => {
       port: 3306,
     }, config.workplace.mysql || {}),
   });
+  if (workplaceConfig.type === 'magento2') {
+    workplaceConfig.magento2.theme = [];
+  }
   // console.log('real', workplaceConfig);
   return workplaceConfig;
 };

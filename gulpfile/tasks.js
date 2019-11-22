@@ -5,42 +5,69 @@ const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 const config = require(resolveApp('package.json'));
 
 const { mergeConfig } = require('./config');
-const workplaceConfig = mergeConfig(config, appDirectory);
-
-console.log('real', workplaceConfig);
-
 const { watchStyles,
   watchLintStyles, watchLintJs,
   watchLive,
 } = require('./watch');
-
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeCommand } = require('./docker');
 const { composerCommand } = require('./composer');
 
-const styleGlob = workplaceConfig.theme.map(f => resolveApp(`${f}/scss`));
-console.log('styleGlob', styleGlob);
+// Global Config
+const workplaceConfig = mergeConfig(config, appDirectory);
 
-const jsFolders = {
-  magento2: [
-    resolveApp('app/code'),
-    `!${resolveApp('app/code')}/**/web/js/vendor`,
-    ...workplaceConfig.theme.map(f => resolveApp(f)),
-    ...workplaceConfig.theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
-    ...workplaceConfig.theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
-  ],
+const styleGlobs = (type) => {
+  switch (type) {
+  case 'magento2': {
+    return ((workplaceConfig.magento2 || {}).theme || [])
+      .map(f => resolveApp(`${f}/scss`));
+  }
+  }
+  return [];
 };
 
-const lintJsGlob = [
-  ...(jsFolders[workplaceConfig.type] || []),
-];
-console.log('lintJsGlob', lintJsGlob);
+const jsFolders = (type) => {
+  switch (type) {
+  case 'magento2': {
+    const theme = ((workplaceConfig.magento2 || {}).theme || []);
+    return [
+      resolveApp('app/code'),
+      `!${resolveApp('app/code')}/**/web/js/vendor`,
+      theme.map(f => resolveApp(f)),
+      theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
+      theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
+    ];
+  }
+  }
+  return [];
+};
 
+const themeFolders = (type) => {
+  switch (type) {
+  case 'magento2': {
+    return ((workplaceConfig.magento2 || {}).theme || []);
+  }
+  }
+  return [];
+};
+
+// Theme config
+const styleGlob = styleGlobs(workplaceConfig.type);
+const lintJsGlob = [...(jsFolders(workplaceConfig.type) || [])];
 const lintStyleGlob = [...styleGlob, ...styleGlob.map(f => `!${f}/vendor`)];
+const themeFolder = themeFolders(workplaceConfig.type) || [];
+
+// DEBUG
+console.log('real config', workplaceConfig);
+console.log('style Glob', styleGlob);
+console.log('lintJs Glob', lintJsGlob);
 console.log('lintStyleGlob', lintStyleGlob);
 
 // Tasks
+const liveTask = () => watchLive();
+liveTask.displayName = 'livereload';
+
 const watchStylesTask = (cb) => {
   if (styleGlob.length === 0) {
     return cb();
@@ -71,9 +98,6 @@ const watchLintJsTask = (cb) => {
 };
 watchLintJsTask.displayName = 'watch lint js';
 
-const liveTask = () => watchLive();
-liveTask.displayName = 'livereload';
-
 const styleTask = (cb) => {
   if (styleGlob.length === 0) {
     return cb();
@@ -81,7 +105,7 @@ const styleTask = (cb) => {
   return compileStyle(
     styleGlob.map((f) => `${f}/**/*.scss`),
     styleTask,
-    workplaceConfig.theme.map(f => resolveApp(f))
+    themeFolder.map(f => resolveApp(f))
   );
 };
 styleTask.displayName = 'scss';

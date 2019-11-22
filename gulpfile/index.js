@@ -7,6 +7,7 @@ const {
   lintJsTask, lintStyleTask,
   fixStyleTask, fixJsTask,
   composerTask,
+  watchSyncTask, syncTask
 } = require('./tasks');
 
 const style = require('./style');
@@ -34,7 +35,9 @@ const result = Object.assign({
     liveTask,
     startDockerTask,
     lintJsTask,
-    lintStyleTask
+    lintStyleTask,
+    syncTask,
+    watchSyncTask
   ),
 }, style);
 

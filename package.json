@@ -1,6 +1,6 @@
 {
   "name": "mage-workplace",
-  "version": "1.0.0beta5",
+  "version": "1.0.0beta6",
   "description": "Magento Workplace",
   "main": "bin/workplace.js",
   "repository": {

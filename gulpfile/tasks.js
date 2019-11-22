@@ -8,11 +8,13 @@ const { mergeConfig } = require('./config');
 const { watchStyles,
   watchLintStyles, watchLintJs,
   watchLive,
+  watchSync
 } = require('./watch');
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeCommand } = require('./docker');
 const { composerCommand } = require('./composer');
+const { Sync } = require('./sync');
 
 // Global Config
 const workplaceConfig = mergeConfig(config, appDirectory);
@@ -52,17 +54,38 @@ const themeFolders = (type) => {
   return [];
 };
 
+const syncGlobs = (type) => {
+  switch (type) {
+  case 'magento1': {
+    return [workplaceConfig.magento1.src].map(f => resolveApp(f));
+  }
+  }
+  return [];
+};
+const syncDestGlobs = (type) => {
+  switch (type) {
+  case 'magento1': {
+    return [workplaceConfig.magento1.dest].map(f => resolveApp(f));
+  }
+  }
+  return null;
+};
+
 // Theme config
 const styleGlob = styleGlobs(workplaceConfig.type);
 const lintJsGlob = [...(jsFolders(workplaceConfig.type) || [])];
 const lintStyleGlob = [...styleGlob, ...styleGlob.map(f => `!${f}/vendor`)];
 const themeFolder = themeFolders(workplaceConfig.type) || [];
+const syncGlob = syncGlobs(workplaceConfig.type);
+const syncDestGlob = syncDestGlobs(workplaceConfig.type);
 
 // DEBUG
 console.log('real config', workplaceConfig);
 console.log('style Glob', styleGlob);
 console.log('lintJs Glob', lintJsGlob);
-console.log('lintStyleGlob', lintStyleGlob);
+console.log('lintStyle Glob', lintStyleGlob);
+console.log('sync Glob', syncGlob);
+console.log('sync dest Glob', syncDestGlob);
 
 // Tasks
 const liveTask = () => watchLive();
@@ -162,6 +185,16 @@ const composerInstallTask = (cb) => composerCommand(
   cb, 'install', workplaceConfig
 );
 
+const syncTask = () => Sync(
+  [`${syncGlob}/**/*.*`, `!${syncGlob}/**/node_modules/*.*`],
+  syncDestGlob,
+  syncTask
+);
+syncTask.displayName = 'sync';
+
+const watchSyncTask = () => watchSync(syncGlob);
+watchSyncTask.displayName = 'watch sync';
+
 exports.lintStyleTask = lintStyleTask;
 exports.lintJsTask = lintJsTask;
 exports.startDockerTask = startDockerTask;
@@ -175,3 +208,5 @@ exports.styleTask = styleTask;
 exports.fixStyleTask = fixStyleTask;
 exports.fixJsTask = fixJsTask;
 exports.composerTask = composerInstallTask;
+exports.syncTask = syncTask;
+exports.watchSyncTask = watchSyncTask;

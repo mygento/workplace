@@ -15,8 +15,16 @@ const mergeConfig = (config, appDirectory) => {
       port: 3306,
     }, config.workplace.mysql || {}),
   });
+
   if (workplaceConfig.type === 'magento2') {
-    workplaceConfig.magento2.theme = [];
+    workplaceConfig.magento2 = workplaceConfig.magento2 || {};
+    workplaceConfig.magento2.theme = workplaceConfig.magento2.theme || [];
+  }
+
+  if (workplaceConfig.type === 'magento1') {
+    workplaceConfig.magento1 = workplaceConfig.magento1 || {};
+    workplaceConfig.magento1.src = workplaceConfig.magento1.src || 'src';
+    workplaceConfig.magento1.dest = workplaceConfig.magento1.dest || 'public';
   }
   // console.log('real', workplaceConfig);
   return workplaceConfig;

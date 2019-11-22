@@ -22,6 +22,9 @@ describe('Config', function() {
           php: 'mygento/php:7.2-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });
@@ -39,6 +42,9 @@ describe('Config', function() {
           php: 'mygento/php:7.2-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });
@@ -56,6 +62,9 @@ describe('Config', function() {
           php: 'mygento/php:7.2-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });
@@ -73,6 +82,9 @@ describe('Config', function() {
           php: 'mygento/php:7.2-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });
@@ -90,6 +102,9 @@ describe('Config', function() {
           php: 'mygento/php:7.2-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });
@@ -109,6 +124,9 @@ describe('Config', function() {
           php: 'mygento/php:7.2-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });
@@ -126,6 +144,9 @@ describe('Config', function() {
           php: 'mygento/php:7.3-full',
           projectName: 'workplace',
           type: 'magento2',
+          magento2: {
+            theme: []
+          }
         }
       );
     });

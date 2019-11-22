@@ -33,3 +33,13 @@ exports.watchLive = () => {
   console.log('start livereload');
   livereload.listen();
 };
+
+exports.watchSync = (files) => {
+  const gulp = require('gulp');
+  console.log('start sync watch', files);
+  const { syncTask } = require('./tasks');
+  return gulp.watch(
+    files,
+    gulp.series(syncTask)
+  );
+};

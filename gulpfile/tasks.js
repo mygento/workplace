@@ -36,9 +36,9 @@ const jsFolders = (type) => {
     return [
       resolveApp('app/code'),
       `!${resolveApp('app/code')}/**/web/js/vendor`,
-      theme.map(f => resolveApp(f)),
-      theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
-      theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
+      ...theme.map(f => resolveApp(f)),
+      ...theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
+      ...theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
     ];
   }
   }
@@ -185,11 +185,19 @@ const composerInstallTask = (cb) => composerCommand(
   cb, 'install', workplaceConfig
 );
 
-const syncTask = () => Sync(
-  [`${syncGlob}/**/*.*`, `!${syncGlob}/**/node_modules/*.*`],
-  syncDestGlob,
-  syncTask
-);
+const syncTask = (cb) => {
+  if (syncGlob.length === 0) {
+    return cb();
+  }
+  if (syncDestGlob === null) {
+    return cb();
+  }
+  Sync(
+    [`${syncGlob}/**/*.*`, `!${syncGlob}/**/node_modules/*.*`],
+    syncDestGlob,
+    syncTask
+  );
+};
 syncTask.displayName = 'sync';
 
 const watchSyncTask = () => watchSync(syncGlob);

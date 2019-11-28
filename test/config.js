@@ -24,7 +24,8 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
         }
       );
     });
@@ -44,7 +45,8 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
         }
       );
     });
@@ -64,7 +66,8 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
         }
       );
     });
@@ -84,7 +87,8 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
         }
       );
     });
@@ -104,7 +108,8 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
         }
       );
     });
@@ -126,7 +131,8 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
         }
       );
     });
@@ -146,7 +152,29 @@ describe('Config', function() {
           type: 'magento2',
           magento2: {
             theme: []
-          }
+          },
+          livereload: true
+        }
+      );
+    });
+
+    it('custom livereload', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', livereload: false },
+      }, '');
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
+          php: 'mygento/php:7.2-full',
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: []
+          },
+          livereload: false
         }
       );
     });

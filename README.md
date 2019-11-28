@@ -33,7 +33,8 @@ Here full list of default options:
     },
     "magento2": {
       "theme": [],
-    }
+    },
+    "livereload": true,
   }
   ...
 }

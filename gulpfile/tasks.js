@@ -88,7 +88,13 @@ console.log('sync Glob', syncGlob);
 console.log('sync dest Glob', syncDestGlob);
 
 // Tasks
-const liveTask = () => watchLive();
+const liveTask = (cb) => {
+  if (styleGlob.length === 0 || !workplaceConfig.livereload) {
+    return cb();
+  }
+  watchLive();
+};
+
 liveTask.displayName = 'livereload';
 
 const watchStylesTask = (cb) => {

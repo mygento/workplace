@@ -14,6 +14,7 @@ const mergeConfig = (config, appDirectory) => {
       image: 'mygento/mysql:5.7',
       port: 3306,
     }, config.workplace.mysql || {}),
+    livereload: config.workplace.livereload !== undefined ? config.workplace.livereload : true
   });
 
   if (workplaceConfig.type === 'magento2') {

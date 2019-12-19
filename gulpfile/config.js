@@ -1,3 +1,11 @@
+const getServiceConfig = (config, service, workplaceConfig) => {
+  if (!Object.prototype.hasOwnProperty.call(config, service)) {
+    return;
+  }
+  const { image = false, port = false  } = config[service];
+  return workplaceConfig[service] = { image, port };
+};
+
 const mergeConfig = (config, appDirectory) => {
   if (!config.workplace) {
     throw new Error('Empty workplace config');
@@ -27,6 +35,12 @@ const mergeConfig = (config, appDirectory) => {
     workplaceConfig.magento1.src = workplaceConfig.magento1.src || 'src';
     workplaceConfig.magento1.dest = workplaceConfig.magento1.dest || 'public';
   }
+
+  getServiceConfig(config.workplace, 'redis', workplaceConfig);
+  getServiceConfig(config.workplace, 'elasticsearch', workplaceConfig);
+  getServiceConfig(config.workplace, 'varnish', workplaceConfig);
+  getServiceConfig(config.workplace, 'clickhouse', workplaceConfig);
+
   // console.log('real', workplaceConfig);
   return workplaceConfig;
 };

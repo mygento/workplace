@@ -26,10 +26,17 @@ Here full list of default options:
       "image": null, //docker varnish image
       "port": 8082 //varnish listen port
     },
-    "redis": null, //docker redis image
+    "redis": {
+      "image": null, //docker redis image
+      "port": 6379 //docker redis image
+    },
     "elasticsearch": {
       "image": null, //docker elasticsearch image
       "port": 5900 //elasticsearch listen port
+    },
+    "clickhouse": {
+      "image": null, //docker clickhouse image
+      "port": 8123 //clickhouse listen port
     },
     "magento2": {
       "theme": [],

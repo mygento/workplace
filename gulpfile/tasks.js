@@ -21,52 +21,52 @@ const workplaceConfig = mergeConfig(config, appDirectory);
 
 const styleGlobs = (type) => {
   switch (type) {
-  case 'magento2': {
-    return ((workplaceConfig.magento2 || {}).theme || [])
-      .map(f => resolveApp(`${f}/scss`));
-  }
+    case 'magento2': {
+      return ((workplaceConfig.magento2 || {}).theme || [])
+        .map(f => resolveApp(`${f}/scss`));
+    }
   }
   return [];
 };
 
 const jsFolders = (type) => {
   switch (type) {
-  case 'magento2': {
-    const theme = ((workplaceConfig.magento2 || {}).theme || []);
-    return [
-      resolveApp('app/code'),
-      `!${resolveApp('app/code')}/**/web/js/vendor`,
-      ...theme.map(f => resolveApp(f)),
-      ...theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
-      ...theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
-    ];
-  }
+    case 'magento2': {
+      const theme = ((workplaceConfig.magento2 || {}).theme || []);
+      return [
+        resolveApp('app/code'),
+        `!${resolveApp('app/code')}/**/web/js/vendor`,
+        ...theme.map(f => resolveApp(f)),
+        ...theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
+        ...theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
+      ];
+    }
   }
   return [];
 };
 
 const themeFolders = (type) => {
   switch (type) {
-  case 'magento2': {
-    return ((workplaceConfig.magento2 || {}).theme || []);
-  }
+    case 'magento2': {
+      return ((workplaceConfig.magento2 || {}).theme || []);
+    }
   }
   return [];
 };
 
 const syncGlobs = (type) => {
   switch (type) {
-  case 'magento1': {
-    return [workplaceConfig.magento1.src].map(f => resolveApp(f));
-  }
+    case 'magento1': {
+      return [workplaceConfig.magento1.src].map(f => resolveApp(f));
+    }
   }
   return [];
 };
 const syncDestGlobs = (type) => {
   switch (type) {
-  case 'magento1': {
-    return [workplaceConfig.magento1.dest].map(f => resolveApp(f));
-  }
+    case 'magento1': {
+      return [workplaceConfig.magento1.dest].map(f => resolveApp(f));
+    }
   }
   return null;
 };

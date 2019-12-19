@@ -178,5 +178,109 @@ describe('Config', function() {
         }
       );
     });
+
+    it('redis', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', redis: { image: 'redis' } },
+      }, '');
+      console.log(config);
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
+          php: 'mygento/php:7.2-full',
+          redis: {
+            image: 'redis',
+            port: false
+          },
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: []
+          },
+          livereload: true,
+        }
+      );
+    });
+
+    it('elastic', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', elasticsearch: { image: 'elastic', port: 9300 } },
+      }, '');
+      console.log(config);
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
+          php: 'mygento/php:7.2-full',
+          elasticsearch: {
+            image: 'elastic',
+            port: 9300
+          },
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: []
+          },
+          livereload: true,
+        }
+      );
+    });
+
+    it('varnish', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', varnish: { image: 'varnish' } },
+      }, '');
+      console.log(config);
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
+          php: 'mygento/php:7.2-full',
+          varnish: {
+            image: 'varnish',
+            port: false
+          },
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: []
+          },
+          livereload: true,
+        }
+      );
+    });
+
+    it('clickhouse', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', clickhouse: { image: 'clickhouse', port: 123 } },
+      }, '');
+      console.log(config);
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
+          php: 'mygento/php:7.2-full',
+          clickhouse: {
+            image: 'clickhouse',
+            port: 123
+          },
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: []
+          },
+          livereload: true,
+        }
+      );
+    });
   });
 });

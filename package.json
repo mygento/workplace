@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mygento/workplace#readme",
   "dependencies": {
+    "chalk": "^3.0.0",
     "cross-spawn": "^7.0.1",
     "eslint-config-mygento": "^1.0.0-beta3",
     "gulp": "^4.0.2",

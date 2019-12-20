@@ -2,6 +2,8 @@ const spawn = require('child_process').spawn;
 const path = require('path');
 const fs = require('fs');
 
+const { PROJECT_FILE, updateGitignore } = require('./gitignore');
+
 const getVolumeName = (projectType, type) => `${projectType}-${type}`;
 const networkName = 'net';
 
@@ -114,7 +116,7 @@ const fileTemplate = (
 
 const runCommand = (command, config, cb) => {
   fs.writeFileSync(
-    'docker-compose.json',
+    path.join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
     fileTemplate(
       config.type,
       config.appDirectory,
@@ -133,7 +135,7 @@ const runCommand = (command, config, cb) => {
   const cmd = spawn(
     'docker-compose',
     ['-f','docker-compose.json', ...command],
-    { stdio: 'inherit' }
+    { stdio: 'inherit', cwd: path.join(config.appDirectory, PROJECT_FILE) }
   );
   cmd.on('close', function(code) {
     if (code !== 0) {
@@ -151,12 +153,16 @@ exports.composeCommand = (cb, command, config) => {
   if (!projectTypes.includes(config.type)) {
     return cb();
   }
+  updateGitignore(config.appDirectory);
+  if (!fs.existsSync(path.join(config.appDirectory, PROJECT_FILE))) {
+    fs.mkdirSync(path.join(config.appDirectory, PROJECT_FILE));
+  }
 
   process.env.COMPOSE_PROJECT_NAME = config.projectName;
   process.env.USERID = require('os').userInfo().uid;
 
   fs.writeFileSync(
-    'docker-compose.json',
+    path.join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
     fileTemplate(
       config.type,
       config.appDirectory,

@@ -41,6 +41,7 @@ const printSuccessMessage = () => {
   log(chalk.blue(`${PROJECT_FILE} was appended to the ${GITIGNORE_FILE}`));
 };
 
+exports.fileExists = fileExists;
 exports.PROJECT_FILE = PROJECT_FILE;
 exports.updateGitignore = (folder) => {
   try {

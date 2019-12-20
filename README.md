@@ -13,7 +13,9 @@ Here full list of default options:
   ...
   "workplace": {
     "type": "magento2", // magento2 | magento | symfony
-    "php": "mygento/php:7.2-full", // php docker image
+    "php": {
+      "image": "mygento/php:7.2-full" // php docker image
+    },
     "nginx": {
       "image": "luckyraul/nginx:backports", // nginx docker image
       "port": 8081 // nginx listen port
@@ -43,6 +45,21 @@ Here full list of default options:
     },
     "livereload": true,
   }
+  ...
+}
+```
+
+Override by custom config in ```.workplace/config.local.json```
+
+```js
+{
+  ...
+  "php": {
+    "image": "mygento/php:7.2-debug"
+  },
+  "nginx": {
+    "port": 8082
+  },
   ...
 }
 ```

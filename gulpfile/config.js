@@ -1,27 +1,49 @@
-const getServiceConfig = (config, service, workplaceConfig) => {
-  if (!Object.prototype.hasOwnProperty.call(config, service)) {
+const debug = require('debug')('workplace:config');
+
+const getServiceConfig = (config, override, service, workplaceConfig) => {
+  if (
+    !Object.prototype.hasOwnProperty.call(config, service) &&
+    !Object.prototype.hasOwnProperty.call(override, service)) {
     return;
   }
-  const { image = false, port = false  } = config[service];
-  return workplaceConfig[service] = { image, port };
+  const { image: image1 = false, port: port1 = false  } = override[service];
+  const { image: image2 = false, port: port2 = false  } = config[service];
+  return workplaceConfig[service] = { image: image1 ? image1 : image2, port: port1 ? port1: port2 };
 };
 
-const mergeConfig = (config, appDirectory) => {
+const mergeConfig = (config, appDirectory, override) => {
+  debug('project config', config);
+  debug('override config', override);
+
   if (!config.workplace) {
     throw new Error('Empty workplace config');
   }
   const workplaceConfig = Object.assign({ appDirectory: appDirectory }, {
     projectName: config.name ? config.name : 'workplace',
     type: config.workplace.type || 'magento2',
-    php: config.workplace.php || 'mygento/php:7.2-full',
-    nginx: Object.assign({
-      image: 'luckyraul/nginx:backports',
-      port: 8081,
-    }, config.workplace.nginx || {}),
-    mysql: Object.assign({
-      image: 'mygento/mysql:5.7',
-      port: 3306,
-    }, config.workplace.mysql || {}),
+    php: Object.assign({},
+      {
+        image: 'mygento/php:7.2-full',
+      },
+      config.workplace.php,
+      override.php
+    ),
+    nginx: Object.assign({},
+      {
+        image: 'luckyraul/nginx:backports',
+        port: 8081,
+      },
+      config.workplace.nginx,
+      override.nginx
+    ),
+    mysql: Object.assign({},
+      {
+        image: 'mygento/mysql:5.7',
+        port: 3306,
+      },
+      config.workplace.mysql,
+      override.mysql
+    ),
     livereload: config.workplace.livereload !== undefined ? config.workplace.livereload : true
   });
 
@@ -36,12 +58,11 @@ const mergeConfig = (config, appDirectory) => {
     workplaceConfig.magento1.dest = workplaceConfig.magento1.dest || 'public';
   }
 
-  getServiceConfig(config.workplace, 'redis', workplaceConfig);
-  getServiceConfig(config.workplace, 'elasticsearch', workplaceConfig);
-  getServiceConfig(config.workplace, 'varnish', workplaceConfig);
-  getServiceConfig(config.workplace, 'clickhouse', workplaceConfig);
+  getServiceConfig(config.workplace, override, 'redis', workplaceConfig);
+  getServiceConfig(config.workplace, override, 'elasticsearch', workplaceConfig);
+  getServiceConfig(config.workplace, override, 'varnish', workplaceConfig);
+  getServiceConfig(config.workplace, override, 'clickhouse', workplaceConfig);
 
-  // console.log('real', workplaceConfig);
   return workplaceConfig;
 };
 

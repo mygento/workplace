@@ -1,6 +1,6 @@
 {
   "name": "mage-workplace",
-  "version": "1.0.0beta8",
+  "version": "1.0.0beta9",
   "description": "Magento Workplace",
   "main": "bin/workplace.js",
   "repository": {
@@ -19,6 +19,7 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "cross-spawn": "^7.0.1",
+    "debug": "^4.1.1",
     "eslint-config-mygento": "^1.0.0-beta3",
     "gulp": "^4.0.2",
     "gulp-cssnano": "^2.1.3",

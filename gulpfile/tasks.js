@@ -1,10 +1,16 @@
 const path = require('path');
 const fs = require('fs');
+const debug = require('debug')('workplace:tasks');
+
+const { PROJECT_FILE, fileExists } = require('./gitignore');
+const { mergeConfig } = require('./config');
+
 const appDirectory = fs.realpathSync(process.env.PWD);
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 const config = require(resolveApp('package.json'));
+const overrideFile = resolveApp(path.join(PROJECT_FILE,'config.local.json'));
+const override = fileExists(overrideFile) ? require(overrideFile) : {};
 
-const { mergeConfig } = require('./config');
 const { watchStyles,
   watchLintStyles, watchLintJs,
   watchLive,
@@ -17,7 +23,7 @@ const { composerCommand } = require('./composer');
 const { Sync } = require('./sync');
 
 // Global Config
-const workplaceConfig = mergeConfig(config, appDirectory);
+const workplaceConfig = mergeConfig(config, appDirectory, override);
 
 const styleGlobs = (type) => {
   switch (type) {
@@ -80,12 +86,12 @@ const syncGlob = syncGlobs(workplaceConfig.type);
 const syncDestGlob = syncDestGlobs(workplaceConfig.type);
 
 // DEBUG
-console.log('real config', workplaceConfig);
-console.log('style Glob', styleGlob);
-console.log('lintJs Glob', lintJsGlob);
-console.log('lintStyle Glob', lintStyleGlob);
-console.log('sync Glob', syncGlob);
-console.log('sync dest Glob', syncDestGlob);
+debug('real config', workplaceConfig);
+debug('style Glob', styleGlob);
+debug('lintJs Glob', lintJsGlob);
+debug('lintStyle Glob', lintStyleGlob);
+debug('sync Glob', syncGlob);
+debug('sync dest Glob', syncDestGlob);
 
 // Tasks
 const liveTask = (cb) => {

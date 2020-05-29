@@ -3,6 +3,9 @@ export USERID=$(id -u)
 if [ -f ./src/auth.json ]; then
     cp ./src/auth.json application
 fi
+if [ -f ./src/composer.json ]; then
+    cp ./src/composer.json application
+fi
 rm -f application/composer.lock
 composer install -d application --ignore-platform-reqs
 cp application/composer.lock src/composer.lock

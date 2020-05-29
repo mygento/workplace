@@ -10,6 +10,7 @@ const paths = [
   `${source}/.php_cs`,
   `!${source}/node_modules/**/*`,
   `!${source}/dev/**/*`,
+  `!${source}/nbproject/**/*`,
   `!${source}/generated/**/*`,
   `!${source}/lib/**/*`,
   `!${source}/setup/**/*`,

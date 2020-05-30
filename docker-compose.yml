@@ -8,7 +8,10 @@ services:
         - ./application:/var/www/public
     php:
       container_name: m2-php
-      image: mygento/php:7.1-full
+      build:
+        context: ./docker/xdebug
+        args:
+          - HOST_ARG=$HOST_ARG
       volumes_from:
        - app
       links:

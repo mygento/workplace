@@ -1,23 +1,32 @@
 const notProduction = process.env.NODE_ENV !== 'production';
 
+const debug = require('debug')('workplace:style');
+
 const gulp = require('gulp');
-const debug = require('gulp-debug');
+const gdebug = require('gulp-debug');
 const noop = require('through2').obj;
 const notify = require('gulp-notify');
 const livereload = require('gulp-livereload');
 
 exports.compileStyle = (files, task, themeFolders, cssOptions = {}) => {
-  console.log('compile Style');
+  debug('compile Style', files);
   const path = require('path');
-  const cssnano = require('gulp-cssnano');
+  const postcss = require('gulp-postcss');
+  const autoprefixer = require('autoprefixer');
+  const cssnano = require('cssnano');
+  const postcss_plugins = [
+    autoprefixer(),
+    cssnano(cssOptions)
+  ];
   const sourcemaps = require('gulp-sourcemaps');
   const sass = require('gulp-sass');
   const sassInheritance = require('gulp-sass-parent');
 
-  const includeOpt = { includePaths: [
-    require('node-normalize-scss').includePaths,
-    require('sassime').includePaths,
-  ],
+  const includeOpt = { includePaths:
+    [
+      require('node-normalize-scss').includePaths,
+      require('sassime').includePaths,
+    ]
   };
 
   return gulp.src(
@@ -25,13 +34,14 @@ exports.compileStyle = (files, task, themeFolders, cssOptions = {}) => {
       allowEmpty: true,
       since: gulp.lastRun(task),
     })
-    .pipe(debug({ title: 'style' }))
+    .pipe(gdebug({ title: 'style' }))
     .pipe(notProduction ? sourcemaps.init() : noop())
-    .pipe(notProduction ? sassInheritance({ dir: themeFolders }) : noop())
-    .pipe(debug({ title: 'style with parent' }))
+    .pipe(notProduction ? sassInheritance({ dir: themeFolders.map(t => `${t}/scss`) }) : noop())
+    .pipe(gdebug({ title: 'style with parent' }))
     .pipe(sass(includeOpt).on('error', sass.logError))
-    .pipe(cssnano(cssOptions))
+    .pipe(postcss(postcss_plugins))
     .pipe(notProduction ? sourcemaps.write('.') : noop())
+    //.pipe(gdebug({ title: 'write style' }))
     .pipe(gulp.dest(function(file) {
       return path.join(file.base, '../css');
     }))

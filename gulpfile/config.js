@@ -6,12 +6,12 @@ const getServiceConfig = (config, override, service, workplaceConfig) => {
     !Object.prototype.hasOwnProperty.call(override, service)) {
     return;
   }
-  const { image: image1 = false, port: port1 = false  } = override[service];
-  const { image: image2 = false, port: port2 = false  } = config[service];
+  const { image: image1 = false, port: port1 = false  } = override[service] || {};
+  const { image: image2 = false, port: port2 = false  } = config[service] || {};
   return workplaceConfig[service] = { image: image1 ? image1 : image2, port: port1 ? port1: port2 };
 };
 
-const mergeConfig = (config, appDirectory, override) => {
+const mergeConfig = (config, appDirectory, override = {}) => {
   debug('project config', config);
   debug('override config', override);
 
@@ -48,8 +48,8 @@ const mergeConfig = (config, appDirectory, override) => {
   });
 
   if (workplaceConfig.type === 'magento2') {
-    workplaceConfig.magento2 = workplaceConfig.magento2 || {};
-    workplaceConfig.magento2.theme = workplaceConfig.magento2.theme || [];
+    workplaceConfig.magento2 = config.workplace.magento2 || {};
+    workplaceConfig.magento2.theme = (config.workplace.magento2 ? config.workplace.magento2.theme : []) || [];
   }
 
   if (workplaceConfig.type === 'magento1') {

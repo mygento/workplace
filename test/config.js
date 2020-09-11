@@ -19,7 +19,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -40,7 +40,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3307 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -61,7 +61,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.6', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -82,7 +82,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx',port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -103,7 +103,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8082 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -126,7 +126,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx', port: 8082 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -139,7 +139,7 @@ describe('Config', function() {
 
     it('custom php image', function() {
       const config = mergeConfig({
-        workplace: { type: 'magento2', php: 'mygento/php:7.3-full' },
+        workplace: { type: 'magento2', php: { image: 'mygento/php:7.3-full' } },
       }, '');
       assert.deepEqual(
         config,
@@ -147,7 +147,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: 'mygento/php:7.3-full',
+          php: { image: 'mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -168,7 +168,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
@@ -190,7 +190,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           redis: {
             image: 'redis',
             port: false
@@ -216,7 +216,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           elasticsearch: {
             image: 'elastic',
             port: 9300
@@ -242,7 +242,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           varnish: {
             image: 'varnish',
             port: false
@@ -268,7 +268,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: 'mygento/php:7.2-full',
+          php: { image: 'mygento/php:7.2-full' },
           clickhouse: {
             image: 'clickhouse',
             port: 123

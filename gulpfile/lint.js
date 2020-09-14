@@ -1,11 +1,12 @@
 const gulp = require('gulp');
-const debug = require('gulp-debug');
+const debug = require('debug')('workplace:watch');
+// const gdebug = require('gulp-debug');
 
 exports.lintStyle = (files, fail = false) => {
-  console.log('lint style', files);
+  debug('lint style', files);
   const gulpStylelint = require('gulp-stylelint');
   return gulp.src(files, { allowEmpty: true })
-    .pipe(debug({ title: 'lint Style' }))
+    //.pipe(gdebug({ title: 'lint Style' }))
     .pipe(gulpStylelint({
       // debug: true,
       failAfterError: fail,
@@ -18,10 +19,10 @@ exports.lintStyle = (files, fail = false) => {
 };
 
 exports.fixStyle = (files) => {
-  console.log('lint style autofix', files);
+  debug('lint style autofix', files);
   const gulpStylelint = require('gulp-stylelint');
   return gulp.src(files, { allowEmpty: true, base: '.' })
-    .pipe(debug({ title: 'lint Style' }))
+    //.pipe(gdebug({ title: 'lint Style' }))
     .pipe(gulpStylelint({
       // debug: true,
       failAfterError: true,
@@ -35,10 +36,10 @@ exports.fixStyle = (files) => {
 };
 
 exports.lintJs = (files, jsOptions = {}) => {
-  console.log('lint js', files);
+  debug('lint js', files);
   const eslint = require('gulp-eslint');
   return gulp.src(files, { allowEmpty: true })
-    .pipe(debug({ title: 'lint Js' }))
+    //.pipe(gdebug({ title: 'lint Js' }))
     .pipe(eslint({
       baseConfig: {
         extends: ['mygento'],
@@ -52,10 +53,10 @@ exports.lintJs = (files, jsOptions = {}) => {
 };
 
 exports.fixJs = (files) => {
-  console.log('lint js autofix', files);
+  debug('lint js autofix', files);
   const eslint = require('gulp-eslint');
   return gulp.src(files, { allowEmpty: true, base: '.' })
-    .pipe(debug({ title: 'lint Js' }))
+    //.pipe(gdebug({ title: 'lint Js' }))
     .pipe(eslint({
       fix: true,
       baseConfig: {

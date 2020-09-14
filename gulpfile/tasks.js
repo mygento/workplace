@@ -28,6 +28,9 @@ const workplaceConfig = mergeConfig(config, appDirectory, override);
 const styleGlobs = (type) => {
   switch (type) {
     case 'magento2': {
+      if (!(workplaceConfig.magento2 || {}).style) {
+        return [];
+      }
       return ((workplaceConfig.magento2 || {}).theme || [])
         .map(f => resolveApp(`${f}/scss`));
     }

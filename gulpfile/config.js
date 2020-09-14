@@ -12,7 +12,7 @@ const getServiceConfig = (config, override, service, workplaceConfig) => {
 };
 
 const mergeConfig = (config, appDirectory, override = {}) => {
-  debug('project config', config);
+  debug('project config', config.workplace);
   debug('override config', override);
 
   if (!config.workplace) {
@@ -48,8 +48,7 @@ const mergeConfig = (config, appDirectory, override = {}) => {
   });
 
   if (workplaceConfig.type === 'magento2') {
-    workplaceConfig.magento2 = config.workplace.magento2 || {};
-    workplaceConfig.magento2.theme = (config.workplace.magento2 ? config.workplace.magento2.theme : []) || [];
+    workplaceConfig.magento2 = Object.assign({}, { style: true, theme: [], lint: [] }, config.workplace.magento2);
   }
 
   if (workplaceConfig.type === 'magento1') {

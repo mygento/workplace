@@ -23,7 +23,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -44,7 +46,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -65,7 +69,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -86,7 +92,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -107,7 +115,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -130,7 +140,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -151,7 +163,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true
         }
@@ -172,7 +186,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: false
         }
@@ -198,7 +214,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true,
         }
@@ -224,7 +242,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true,
         }
@@ -250,7 +270,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true,
         }
@@ -276,7 +298,9 @@ describe('Config', function() {
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
-            theme: []
+            theme: [],
+            lint: [],
+            style: true
           },
           livereload: true,
         }

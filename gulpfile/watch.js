@@ -1,6 +1,8 @@
+const debug = require('debug')('workplace:watch');
+
 exports.watchStyles = (files) => {
   const gulp = require('gulp');
-  console.log('start watch styles');
+  debug('start watch styles');
   const { styleTask } = require('./tasks');
   return gulp.watch(
     files,
@@ -10,7 +12,7 @@ exports.watchStyles = (files) => {
 
 exports.watchLintStyles = (files) => {
   const gulp = require('gulp');
-  console.log('start watch lint styles');
+  debug('start watch lint styles');
   const { lintStyleTask } = require('./tasks');
   return gulp.watch(
     files,
@@ -20,7 +22,7 @@ exports.watchLintStyles = (files) => {
 
 exports.watchLintJs = (files) => {
   const gulp = require('gulp');
-  console.log('start watch lint js', files);
+  debug('start watch lint js', files);
   const { lintJsTask } = require('./tasks');
   return gulp.watch(
     files,
@@ -30,13 +32,13 @@ exports.watchLintJs = (files) => {
 
 exports.watchLive = () => {
   const livereload = require('gulp-livereload');
-  console.log('start livereload');
+  debug('start livereload');
   livereload.listen();
 };
 
 exports.watchSync = (files) => {
   const gulp = require('gulp');
-  console.log('start sync watch', files);
+  debug('start sync watch', files);
   const { syncTask } = require('./tasks');
   return gulp.watch(
     files,

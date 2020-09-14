@@ -41,7 +41,10 @@ Here full list of default options:
       "port": 8123 //clickhouse listen port
     },
     "magento2": {
-      "theme": [],
+      "theme": [
+        "app/design/frontend/XXX/yyy/web" // relative path to theme web folder
+      ],
+      "lint": [], // additional globs to lint
     },
     "livereload": true,
   }

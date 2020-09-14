@@ -21,7 +21,7 @@
     "cross-spawn": "^7.0.3",
     "cssnano": "^4.1.10",
     "debug": "^4.1.1",
-    "eslint-config-mygento": "^1.0.0-beta3",
+    "eslint-config-mygento": "^1.0.0-beta4",
     "gulp": "^4.0.2",
     "gulp-debug": "^4.0.0",
     "gulp-eslint": "^6.0.0",

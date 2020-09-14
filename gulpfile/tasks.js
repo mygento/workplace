@@ -39,12 +39,14 @@ const jsFolders = (type) => {
   switch (type) {
     case 'magento2': {
       const theme = ((workplaceConfig.magento2 || {}).theme || []);
+      const lint = ((workplaceConfig.magento2 || {}).lint || []);
       return [
         resolveApp('app/code'),
         `!${resolveApp('app/code')}/**/web/js/vendor`,
         ...theme.map(f => resolveApp(f)),
         ...theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
         ...theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
+        ...lint.map(f => f.indexOf('!') !== 0 ? resolveApp(f) : `!${resolveApp(f.substring(1))}`),
       ];
     }
   }

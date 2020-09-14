@@ -1,6 +1,6 @@
 {
   "name": "mage-workplace",
-  "version": "1.0.0beta9",
+  "version": "1.0.0beta11",
   "description": "Magento Workplace",
   "main": "bin/workplace.js",
   "repository": {
@@ -29,7 +29,7 @@
     "gulp-notify": "^3.2.0",
     "gulp-postcss": "^8.0.0",
     "gulp-sass": "^4.1.0",
-    "gulp-sass-parent": "^2.0.1",
+    "gulp-sass-parent": "^2.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-stylelint": "^13.0.0",
     "gulp-watch": "^5.0.1",

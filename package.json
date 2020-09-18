@@ -1,6 +1,6 @@
 {
   "name": "mage-workplace",
-  "version": "1.0.0beta12",
+  "version": "1.0.0beta13",
   "description": "Magento Workplace",
   "main": "bin/workplace.js",
   "repository": {
@@ -33,7 +33,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-stylelint": "^13.0.0",
     "gulp-watch": "^5.0.1",
-    "node-normalize-scss": "^8.0.1",
+    "node-normalize-scss": "^8.1.2",
     "require-dir": "^1.2.0",
     "sassime": "^1.1.6",
     "stylelint": "^13.7.1",

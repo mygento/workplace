@@ -32,7 +32,7 @@ const styleGlobs = (type) => {
         return [];
       }
       return ((workplaceConfig.magento2 || {}).theme || [])
-        .map(f => resolveApp(`${f}/scss`));
+        .map(f => resolveApp(`${f}/web/scss`));
     }
   }
   return [];
@@ -47,8 +47,8 @@ const jsFolders = (type) => {
         resolveApp('app/code'),
         `!${resolveApp('app/code')}/**/web/js/vendor`,
         ...theme.map(f => resolveApp(f)),
-        ...theme.map(f => `!${resolveApp(`${f}/js/mage/`)}`),
-        ...theme.map(f => `!${resolveApp(`${f}/js/vendor/`)}`),
+        ...theme.map(f => `!${resolveApp(`${f}/web/js/mage/`)}`),
+        ...theme.map(f => `!${resolveApp(`${f}/web/js/vendor/`)}`),
         ...lint.map(f => f.indexOf('!') !== 0 ? resolveApp(f) : `!${resolveApp(f.substring(1))}`),
       ];
     }

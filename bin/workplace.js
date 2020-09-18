@@ -19,6 +19,7 @@ switch (script) {
   case 'build':
   case 'test':
   case 'stop':
+  case 'lint':
   case 'delete':
   case 'start': {
     const result = spawn.sync(

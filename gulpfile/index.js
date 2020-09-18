@@ -23,6 +23,10 @@ const result = Object.assign({
     stopDockerTask,
     rmDockerTask
   ),
+  lint: gulp.parallel(
+    lintJsTask,
+    lintStyleTask
+  ),
   test: gulp.parallel(
     fixJsTask,
     fixStyleTask

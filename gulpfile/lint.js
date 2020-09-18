@@ -1,12 +1,15 @@
 const gulp = require('gulp');
 const debug = require('debug')('workplace:watch');
-// const gdebug = require('gulp-debug');
+const gdebug = require('gulp-debug');
+
+const debugMode = !!process.env.DEBUG;
+const noop = require('through2').obj;
 
 exports.lintStyle = (files, fail = false) => {
   debug('lint style', files);
   const gulpStylelint = require('gulp-stylelint');
   return gulp.src(files, { allowEmpty: true })
-    //.pipe(gdebug({ title: 'lint Style' }))
+    .pipe(debugMode ? gdebug({ title: 'lint Style' }) : noop())
     .pipe(gulpStylelint({
       // debug: true,
       failAfterError: fail,
@@ -22,7 +25,7 @@ exports.fixStyle = (files) => {
   debug('lint style autofix', files);
   const gulpStylelint = require('gulp-stylelint');
   return gulp.src(files, { allowEmpty: true, base: '.' })
-    //.pipe(gdebug({ title: 'lint Style' }))
+    .pipe(debugMode ? gdebug({ title: 'lint Style' }) : noop())
     .pipe(gulpStylelint({
       // debug: true,
       failAfterError: true,
@@ -39,7 +42,7 @@ exports.lintJs = (files, jsOptions = {}) => {
   debug('lint js', files);
   const eslint = require('gulp-eslint');
   return gulp.src(files, { allowEmpty: true })
-    //.pipe(gdebug({ title: 'lint Js' }))
+    .pipe(debugMode ? gdebug({ title: 'lint Js' }) : noop())
     .pipe(eslint({
       baseConfig: {
         extends: ['mygento'],
@@ -56,7 +59,7 @@ exports.fixJs = (files) => {
   debug('lint js autofix', files);
   const eslint = require('gulp-eslint');
   return gulp.src(files, { allowEmpty: true, base: '.' })
-    //.pipe(gdebug({ title: 'lint Js' }))
+    .pipe(debugMode ? gdebug({ title: 'lint Js' }) : noop())
     .pipe(eslint({
       fix: true,
       baseConfig: {

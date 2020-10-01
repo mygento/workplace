@@ -209,7 +209,7 @@ const syncTask = (cb) => {
   if (syncDestGlob === null) {
     return cb();
   }
-  Sync(
+  return Sync(
     [`${syncGlob}/**/*.*`, `!${syncGlob}/**/node_modules/*.*`],
     syncDestGlob,
     syncTask
@@ -217,7 +217,12 @@ const syncTask = (cb) => {
 };
 syncTask.displayName = 'sync';
 
-const watchSyncTask = () => watchSync(syncGlob);
+const watchSyncTask = (cb) => {
+  if (syncGlob.length === 0) {
+    return cb();
+  }
+  return watchSync(syncGlob);
+};
 watchSyncTask.displayName = 'watch sync';
 
 exports.lintStyleTask = lintStyleTask;

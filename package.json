@@ -27,21 +27,22 @@
     "gulp-eslint": "^6.0.0",
     "gulp-livereload": "^4.0.2",
     "gulp-notify": "^3.2.0",
-    "gulp-postcss": "^8.0.0",
+    "gulp-postcss": "^9.0.0",
     "gulp-sass": "^4.1.0",
     "gulp-sass-parent": "^2.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-stylelint": "^13.0.0",
     "gulp-watch": "^5.0.1",
     "node-normalize-scss": "^8.1.2",
+    "postcss": "^8.0.0",
     "require-dir": "^1.2.0",
     "sassime": "^1.1.6",
-    "stylelint": "^13.7.1",
+    "stylelint": "^13.7.2",
     "stylelint-config-mygento": "1.0.0-beta2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^8.1.3"
+    "mocha": "^8.2.0"
   },
   "eslintConfig": {
     "extends": "mygento",

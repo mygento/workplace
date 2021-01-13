@@ -55,6 +55,52 @@ describe('Config', function() {
       );
     });
 
+    it('custom php port', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', php: { port: 9999 } },
+      }, '');
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
+          php: { image: 'mygento/php:7.2-full', port: 9999 },
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: [],
+            lint: [],
+            style: true
+          },
+          livereload: true
+        }
+      );
+    });
+
+    it('custom php env', function() {
+      const config = mergeConfig({
+        workplace: { type: 'magento2', php: { env: ['XDEBUG_SESSION=ide'] } },
+      }, '');
+      assert.deepEqual(
+        config,
+        {
+          appDirectory: '',
+          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
+          nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
+          php: { image: 'mygento/php:7.2-full', env: ['XDEBUG_SESSION=ide'] },
+          projectName: 'workplace',
+          type: 'magento2',
+          magento2: {
+            theme: [],
+            lint: [],
+            style: true
+          },
+          livereload: true
+        }
+      );
+    });
+
     it('custom mysql image', function() {
       const config = mergeConfig({
         workplace: { type: 'magento2', mysql: { image: 'mygento/mysql:5.6' } },

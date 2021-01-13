@@ -1,6 +1,6 @@
 {
   "name": "mage-workplace",
-  "version": "1.0.0beta15",
+  "version": "1.0.0beta16",
   "description": "Magento Workplace",
   "main": "bin/workplace.js",
   "repository": {
@@ -20,7 +20,7 @@
     "chalk": "^4.1.0",
     "cross-spawn": "^7.0.3",
     "cssnano": "^4.1.10",
-    "debug": "^4.1.1",
+    "debug": "^4.3.1",
     "eslint-config-mygento": "^1.0.0-beta4",
     "gulp": "^4.0.2",
     "gulp-debug": "^4.0.0",
@@ -34,15 +34,15 @@
     "gulp-stylelint": "^13.0.0",
     "gulp-watch": "^5.0.1",
     "node-normalize-scss": "^8.1.2",
-    "postcss": "^8.0.0",
+    "postcss": "^8.2.4",
     "require-dir": "^1.2.0",
     "sassime": "^1.1.6",
-    "stylelint": "^13.7.2",
+    "stylelint": "^13.8.0",
     "stylelint-config-mygento": "1.0.0-beta2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^8.2.0"
+    "mocha": "^8.2.1"
   },
   "eslintConfig": {
     "extends": "mygento",

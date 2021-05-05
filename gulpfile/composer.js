@@ -1,3 +1,4 @@
+const debug = require('debug')('workplace:composer');
 const spawn = require('child_process').spawn;
 
 const runCommand = (command, directory, cb, ignore = true) => {
@@ -20,6 +21,10 @@ const runCommand = (command, directory, cb, ignore = true) => {
 };
 
 exports.composerCommand = (cb, command, config) => {
-  console.log(`${config.appDirectory}/composer.json`);
+  debug(`${config.appDirectory}/composer.json`);
+  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
+    cb();
+    return;
+  }
   runCommand(command, config.appDirectory, cb);
 };

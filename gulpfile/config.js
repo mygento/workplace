@@ -57,10 +57,13 @@ const mergeConfig = (config, appDirectory, override = {}) => {
     workplaceConfig.magento1.dest = workplaceConfig.magento1.dest || 'public';
   }
 
+  // console.log(config.workplace);
+
   getServiceConfig(config.workplace, override, 'redis', workplaceConfig);
   getServiceConfig(config.workplace, override, 'elasticsearch', workplaceConfig);
   getServiceConfig(config.workplace, override, 'varnish', workplaceConfig);
   getServiceConfig(config.workplace, override, 'clickhouse', workplaceConfig);
+  getServiceConfig(config.workplace, override, 'rabbitmq', workplaceConfig);
 
   return workplaceConfig;
 };

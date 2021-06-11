@@ -52,7 +52,8 @@ const fileTemplate = (
   [redisImage = null, redisPort = null, redisEnv = []],
   [elasticImage = null, elasticPort = null, elasticEnv = []],
   [varnishImage = null, varnishPort = null, varnishEnv = []],
-  [clickhouseImage = null, clickhousePort = null, clickhouseEnv = []]
+  [clickhouseImage = null, clickhousePort = null, clickhouseEnv = []],
+  [rabbitmqImage = null, rabbitmqPort = null, rabbitmqEnv = []]
 ) => JSON.stringify({
   version: '3.7',
   services: Object.assign(
@@ -96,13 +97,15 @@ const fileTemplate = (
     optionalService(projectName, 'redis', redisImage, redisPort, 6379, redisEnv, []),
     optionalService(projectName, 'elastic', elasticImage, elasticPort, 9200, ['discovery.type=single-node', ...elasticEnv], ['elastic:/usr/share/elasticsearch/data']),
     optionalService(projectName, 'varnish', varnishImage, varnishPort, 8081, varnishEnv, []),
-    optionalService(projectName, 'clickhouse', clickhouseImage, clickhousePort, 8123, clickhouseEnv, ['clickhouse:/var/lib/clickhouse'])
+    optionalService(projectName, 'clickhouse', clickhouseImage, clickhousePort, 8123, clickhouseEnv, ['clickhouse:/var/lib/clickhouse']),
+    optionalService(projectName, 'rabbitmq', rabbitmqImage, rabbitmqPort, 5672, rabbitmqEnv, ['rabbitmq:/var/lib/rabbitmq'])
   ),
   volumes: Object.assign(
     {},
     { [getVolumeName(projectType, 'db')]: {} },
     optionalVolume(elasticImage, 'elastic'),
-    optionalVolume(clickhouseImage, 'clickhouse')
+    optionalVolume(clickhouseImage, 'clickhouse'),
+    optionalVolume(rabbitmqImage, 'rabbitmq')
   ),
   networks: {
     [networkName]: {
@@ -129,7 +132,8 @@ const runCommand = (command, config, cb) => {
       getServiceConfig(config, 'redis'),
       getServiceConfig(config, 'elasticsearch'),
       getServiceConfig(config, 'varnish'),
-      getServiceConfig(config, 'clickhouse')
+      getServiceConfig(config, 'clickhouse'),
+      getServiceConfig(config, 'rabbitmq')
     )
   );
 
@@ -175,7 +179,8 @@ exports.composeCommand = (cb, command, config) => {
       getServiceConfig(config, 'redis'),
       getServiceConfig(config, 'elasticsearch'),
       getServiceConfig(config, 'varnish'),
-      getServiceConfig(config, 'clickhouse')
+      getServiceConfig(config, 'clickhouse'),
+      getServiceConfig(config, 'rabbitmq')
     )
   );
 

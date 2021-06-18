@@ -166,23 +166,5 @@ exports.composeCommand = (cb, command, config) => {
   process.env.COMPOSE_PROJECT_NAME = config.projectName;
   process.env.USERID = require('os').userInfo().uid;
 
-  fs.writeFileSync(
-    path.join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
-    fileTemplate(
-      config.type,
-      config.appDirectory,
-      path.resolve(`../nginx/${config.type}`),
-      config.projectName,
-      [config.php.image, config.php.port, config.php.env],
-      [config.nginx.image,  config.nginx.port, config.nginx.env],
-      [config.mysql.image,  config.mysql.port, config.mysql.env],
-      getServiceConfig(config, 'redis'),
-      getServiceConfig(config, 'elasticsearch'),
-      getServiceConfig(config, 'varnish'),
-      getServiceConfig(config, 'clickhouse'),
-      getServiceConfig(config, 'rabbitmq')
-    )
-  );
-
   runCommand(command, config, cb);
 };

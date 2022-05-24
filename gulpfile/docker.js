@@ -95,7 +95,7 @@ const fileTemplate = (
       },
     },
     optionalService(projectName, 'redis', redisImage, redisPort, 6379, redisEnv, []),
-    optionalService(projectName, 'elastic', elasticImage, elasticPort, 9200, ['discovery.type=single-node', ...elasticEnv], ['elastic:/usr/share/elasticsearch/data']),
+    optionalService(projectName, 'elastic', elasticImage, elasticPort, 9200, ['discovery.type=single-node', 'DISABLE_SECURITY_PLUGIN=true', ...elasticEnv], ['elastic:/usr/share/elasticsearch/data']),
     optionalService(projectName, 'varnish', varnishImage, varnishPort, 8081, varnishEnv, []),
     optionalService(projectName, 'clickhouse', clickhouseImage, clickhousePort, 8123, clickhouseEnv, ['clickhouse:/var/lib/clickhouse']),
     optionalService(projectName, 'rabbitmq', rabbitmqImage, rabbitmqPort, 5672, rabbitmqEnv, ['rabbitmq:/var/lib/rabbitmq'])

@@ -6,7 +6,6 @@ const gulp = require('gulp');
 const gdebug = require('gulp-debug');
 const noop = require('through2').obj;
 const notify = require('gulp-notify');
-const livereload = require('gulp-livereload');
 
 exports.compileStyle = (files, task, themeFolders, cssOptions = {}) => {
   debug('compile Style', files);
@@ -45,7 +44,6 @@ exports.compileStyle = (files, task, themeFolders, cssOptions = {}) => {
     .pipe(gulp.dest(function(file) {
       return path.join(file.base, '../css');
     }))
-    .pipe(notProduction ? livereload()  : noop())
     .pipe(notProduction ? notify({
       message: 'Styles complete',
       onLast: true,

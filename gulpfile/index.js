@@ -3,11 +3,10 @@ const gulp = require('gulp');
 const {
   watchStylesTask, watchLintStylesTask, watchLintJsTask,
   styleTask,
-  startDockerTask, liveTask, stopDockerTask, rmDockerTask,
+  startDockerTask, stopDockerTask, rmDockerTask,
   lintJsTask, lintStyleTask,
   fixStyleTask, fixJsTask,
-  composerTask,
-  watchSyncTask, syncTask
+  composerTask
 } = require('./tasks');
 
 const style = require('./style');
@@ -36,12 +35,9 @@ const result = Object.assign({
     watchStylesTask,
     watchLintStylesTask,
     watchLintJsTask,
-    liveTask,
     startDockerTask,
     lintJsTask,
-    lintStyleTask,
-    syncTask,
-    watchSyncTask
+    lintStyleTask
   ),
 }, style);
 

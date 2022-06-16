@@ -29,19 +29,3 @@ exports.watchLintJs = (files) => {
     gulp.series(lintJsTask)
   );
 };
-
-exports.watchLive = () => {
-  const livereload = require('gulp-livereload');
-  debug('start livereload');
-  livereload.listen();
-};
-
-exports.watchSync = (files) => {
-  const gulp = require('gulp');
-  debug('start sync watch', files);
-  const { syncTask } = require('./tasks');
-  return gulp.watch(
-    files,
-    gulp.series(syncTask)
-  );
-};

@@ -23,7 +23,7 @@ const mergeConfig = (config, appDirectory, override = {}) => {
     type: config.workplace.type || 'magento2',
     php: Object.assign({},
       {
-        image: 'mygento/php:7.2-full',
+        image: 'ghcr.io/mygento/php:7.3-full',
       },
       config.workplace.php,
       override.php
@@ -43,18 +43,11 @@ const mergeConfig = (config, appDirectory, override = {}) => {
       },
       config.workplace.mysql,
       override.mysql
-    ),
-    livereload: config.workplace.livereload !== undefined ? config.workplace.livereload : true
+    )
   });
 
   if (workplaceConfig.type === 'magento2') {
     workplaceConfig.magento2 = Object.assign({}, { style: true, theme: [], lint: [] }, config.workplace.magento2);
-  }
-
-  if (workplaceConfig.type === 'magento1') {
-    workplaceConfig.magento1 = workplaceConfig.magento1 || {};
-    workplaceConfig.magento1.src = workplaceConfig.magento1.src || 'src';
-    workplaceConfig.magento1.dest = workplaceConfig.magento1.dest || 'public';
   }
 
   // console.log(config.workplace);

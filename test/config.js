@@ -19,15 +19,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -42,15 +41,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3307 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -65,15 +63,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: { image: 'mygento/php:7.2-full', port: 9999 },
+          php: { image: 'ghcr.io/mygento/php:7.3-full', port: 9999 },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -88,15 +85,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: { image: 'mygento/php:7.2-full', env: ['XDEBUG_SESSION=ide'] },
+          php: { image: 'ghcr.io/mygento/php:7.3-full', env: ['XDEBUG_SESSION=ide'] },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -111,15 +107,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.6', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports',port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -134,15 +129,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx',port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -157,15 +151,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8082 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -182,15 +175,14 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx', port: 8082 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           projectName: 'workplace',
           type: 'magento2',
           magento2: {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
+          }
         }
       );
     });
@@ -212,31 +204,7 @@ describe('Config', function() {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true
-        }
-      );
-    });
-
-    it('custom livereload', function() {
-      const config = mergeConfig({
-        workplace: { type: 'magento2', livereload: false },
-      }, '');
-      assert.deepEqual(
-        config,
-        {
-          appDirectory: '',
-          mysql: { image: 'mygento/mysql:5.7', port: 3306 },
-          nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
-          projectName: 'workplace',
-          type: 'magento2',
-          magento2: {
-            theme: [],
-            lint: [],
-            style: true
-          },
-          livereload: false
+          }
         }
       );
     });
@@ -252,7 +220,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           redis: {
             image: 'redis',
             port: false
@@ -263,8 +231,7 @@ describe('Config', function() {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true,
+          }
         }
       );
     });
@@ -280,7 +247,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           elasticsearch: {
             image: 'elastic',
             port: 9300
@@ -291,8 +258,7 @@ describe('Config', function() {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true,
+          }
         }
       );
     });
@@ -308,7 +274,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           varnish: {
             image: 'varnish',
             port: false
@@ -319,8 +285,7 @@ describe('Config', function() {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true,
+          }
         }
       );
     });
@@ -336,7 +301,7 @@ describe('Config', function() {
           appDirectory: '',
           mysql: { image: 'mygento/mysql:5.7', port: 3306 },
           nginx: { image: 'luckyraul/nginx:backports', port: 8081 },
-          php: { image: 'mygento/php:7.2-full' },
+          php: { image: 'ghcr.io/mygento/php:7.3-full' },
           clickhouse: {
             image: 'clickhouse',
             port: 123
@@ -347,8 +312,7 @@ describe('Config', function() {
             theme: [],
             lint: [],
             style: true
-          },
-          livereload: true,
+          }
         }
       );
     });

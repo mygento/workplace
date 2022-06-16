@@ -12,15 +12,12 @@ const overrideFile = resolveApp(path.join(PROJECT_FILE,'config.local.json'));
 const override = fileExists(overrideFile) ? require(overrideFile) : {};
 
 const { watchStyles,
-  watchLintStyles, watchLintJs,
-  watchLive,
-  watchSync
+  watchLintStyles, watchLintJs
 } = require('./watch');
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
 const { compileStyle } = require('./style');
 const { composeCommand } = require('./docker');
 const { composerCommand } = require('./composer');
-const { Sync } = require('./sync');
 
 // Global Config
 const workplaceConfig = mergeConfig(config, appDirectory, override);
@@ -65,49 +62,19 @@ const themeFolders = (type) => {
   return [];
 };
 
-const syncGlobs = (type) => {
-  switch (type) {
-    case 'magento1': {
-      return [workplaceConfig.magento1.src].map(f => resolveApp(f));
-    }
-  }
-  return [];
-};
-const syncDestGlobs = (type) => {
-  switch (type) {
-    case 'magento1': {
-      return [workplaceConfig.magento1.dest].map(f => resolveApp(f));
-    }
-  }
-  return null;
-};
-
 // Theme config
 const styleGlob = styleGlobs(workplaceConfig.type);
 const lintJsGlob = [...(jsFolders(workplaceConfig.type) || [])];
 const lintStyleGlob = [...styleGlob, ...styleGlob.map(f => `!${f}/vendor`)];
 const themeFolder = themeFolders(workplaceConfig.type) || [];
-const syncGlob = syncGlobs(workplaceConfig.type);
-const syncDestGlob = syncDestGlobs(workplaceConfig.type);
 
 // DEBUG
 debug('real config', workplaceConfig);
 debug('style Glob', styleGlob);
 debug('lintJs Glob', lintJsGlob);
 debug('lintStyle Glob', lintStyleGlob);
-debug('sync Glob', syncGlob);
-debug('sync dest Glob', syncDestGlob);
 
 // Tasks
-const liveTask = (cb) => {
-  if (styleGlob.length === 0 || !workplaceConfig.livereload) {
-    return cb();
-  }
-  watchLive();
-};
-
-liveTask.displayName = 'livereload';
-
 const watchStylesTask = (cb) => {
   if (styleGlob.length === 0) {
     return cb();
@@ -202,29 +169,6 @@ const composerInstallTask = (cb) => composerCommand(
   cb, 'install', workplaceConfig
 );
 
-const syncTask = (cb) => {
-  if (syncGlob.length === 0) {
-    return cb();
-  }
-  if (syncDestGlob === null) {
-    return cb();
-  }
-  return Sync(
-    [`${syncGlob}/**/*.*`, `!${syncGlob}/**/node_modules/*.*`],
-    syncDestGlob,
-    syncTask
-  );
-};
-syncTask.displayName = 'sync';
-
-const watchSyncTask = (cb) => {
-  if (syncGlob.length === 0) {
-    return cb();
-  }
-  return watchSync(syncGlob);
-};
-watchSyncTask.displayName = 'watch sync';
-
 exports.lintStyleTask = lintStyleTask;
 exports.lintJsTask = lintJsTask;
 exports.startDockerTask = startDockerTask;
@@ -233,10 +177,7 @@ exports.rmDockerTask = rmDockerTask;
 exports.watchStylesTask = watchStylesTask;
 exports.watchLintStylesTask = watchLintStylesTask;
 exports.watchLintJsTask = watchLintJsTask;
-exports.liveTask = liveTask;
 exports.styleTask = styleTask;
 exports.fixStyleTask = fixStyleTask;
 exports.fixJsTask = fixJsTask;
 exports.composerTask = composerInstallTask;
-exports.syncTask = syncTask;
-exports.watchSyncTask = watchSyncTask;

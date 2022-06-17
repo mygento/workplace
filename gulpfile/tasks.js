@@ -11,11 +11,8 @@ const config = require(resolveApp('package.json'));
 const overrideFile = resolveApp(path.join(PROJECT_FILE,'config.local.json'));
 const override = fileExists(overrideFile) ? require(overrideFile) : {};
 
-const { watchStyles,
-  watchLintStyles, watchLintJs
-} = require('./watch');
+const { watchLintStyles, watchLintJs } = require('./watch');
 const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
-const { compileStyle } = require('./style');
 const { composeCommand } = require('./docker');
 const { composerCommand } = require('./composer');
 
@@ -53,20 +50,10 @@ const jsFolders = (type) => {
   return [];
 };
 
-const themeFolders = (type) => {
-  switch (type) {
-    case 'magento2': {
-      return ((workplaceConfig.magento2 || {}).theme || []);
-    }
-  }
-  return [];
-};
-
 // Theme config
 const styleGlob = styleGlobs(workplaceConfig.type);
 const lintJsGlob = [...(jsFolders(workplaceConfig.type) || [])];
 const lintStyleGlob = [...styleGlob, ...styleGlob.map(f => `!${f}/vendor`)];
-const themeFolder = themeFolders(workplaceConfig.type) || [];
 
 // DEBUG
 debug('real config', workplaceConfig);
@@ -75,16 +62,6 @@ debug('lintJs Glob', lintJsGlob);
 debug('lintStyle Glob', lintStyleGlob);
 
 // Tasks
-const watchStylesTask = (cb) => {
-  if (styleGlob.length === 0) {
-    return cb();
-  }
-  return watchStyles(
-    styleGlob.map((f) => `${f}/**/*.scss`)
-  );
-};
-watchStylesTask.displayName = 'watch style';
-
 const watchLintStylesTask = (cb) => {
   if (lintStyleGlob.length === 0) {
     return cb();
@@ -104,18 +81,6 @@ const watchLintJsTask = (cb) => {
   );
 };
 watchLintJsTask.displayName = 'watch lint js';
-
-const styleTask = (cb) => {
-  if (styleGlob.length === 0) {
-    return cb();
-  }
-  return compileStyle(
-    styleGlob.map((f) => `${f}/**/*.scss`),
-    styleTask,
-    themeFolder.map(f => resolveApp(f))
-  );
-};
-styleTask.displayName = 'scss';
 
 const lintJsTask = (cb) => {
   if (lintJsGlob.length === 0) {
@@ -174,10 +139,8 @@ exports.lintJsTask = lintJsTask;
 exports.startDockerTask = startDockerTask;
 exports.stopDockerTask = stopDockerTask;
 exports.rmDockerTask = rmDockerTask;
-exports.watchStylesTask = watchStylesTask;
 exports.watchLintStylesTask = watchLintStylesTask;
 exports.watchLintJsTask = watchLintJsTask;
-exports.styleTask = styleTask;
 exports.fixStyleTask = fixStyleTask;
 exports.fixJsTask = fixJsTask;
 exports.composerTask = composerInstallTask;

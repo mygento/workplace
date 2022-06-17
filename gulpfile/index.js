@@ -1,17 +1,14 @@
 const gulp = require('gulp');
 
 const {
-  watchStylesTask, watchLintStylesTask, watchLintJsTask,
-  styleTask,
+  watchLintStylesTask, watchLintJsTask,
   startDockerTask, stopDockerTask, rmDockerTask,
   lintJsTask, lintStyleTask,
   fixStyleTask, fixJsTask,
   composerTask
 } = require('./tasks');
 
-const style = require('./style');
-
-const result = Object.assign({
+const result = {
   install: gulp.series(
     composerTask
   ),
@@ -31,14 +28,12 @@ const result = Object.assign({
     fixStyleTask
   ),
   start: gulp.parallel(
-    styleTask,
-    watchStylesTask,
     watchLintStylesTask,
     watchLintJsTask,
     startDockerTask,
     lintJsTask,
     lintStyleTask
   ),
-}, style);
+};
 
 module.exports = result;

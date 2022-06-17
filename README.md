@@ -12,9 +12,9 @@ Here full list of default options:
 {
   ...
   "workplace": {
-    "type": "magento2", // magento2 | magento | symfony
+    "type": "magento2", // magento2 | symfony
     "php": {
-      "image": "mygento/php:7.2-full" // php docker image
+      "image": "ghcr.io/mygento/php:8.1-full" // php docker image
     },
     "nginx": {
       "image": "luckyraul/nginx:backports", // nginx docker image
@@ -45,8 +45,7 @@ Here full list of default options:
         "app/design/frontend/XXX/yyy/web" // relative path to theme web folder
       ],
       "lint": [], // additional globs to lint
-    },
-    "livereload": true,
+    }
   }
   ...
 }
@@ -58,7 +57,7 @@ Override by custom config in ```.workplace/config.local.json```
 {
   ...
   "php": {
-    "image": "mygento/php:7.2-debug"
+    "image": "ghcr.io/mygento/php:8.1-debug"
   },
   "nginx": {
     "port": 8082

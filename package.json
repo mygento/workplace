@@ -1,7 +1,7 @@
 {
   "name": "@mygento/workplace",
-  "version": "1.0.0-beta1",
-  "description": "Magento Workplace",
+  "version": "1.0.0-beta2",
+  "description": "Workplace",
   "main": "bin/workplace.js",
   "repository": {
     "type": "git",
@@ -13,11 +13,11 @@
     "url": "https://github.com/mygento/workplace/issues"
   },
   "bin": {
-    "mage-workplace": "./bin/workplace.js"
+    "workplace": "./bin/workplace.js"
   },
   "homepage": "https://github.com/mygento/workplace#readme",
   "dependencies": {
-    "chalk": "^4.1.0",
+    "chalk": "^5.0.1",
     "cross-spawn": "^7.0.3",
     "debug": "^4.3.1",
     "eslint-config-mygento": "^1.0.0-beta4",
@@ -25,13 +25,12 @@
     "gulp-debug": "^4.0.0",
     "gulp-eslint": "^6.0.0",
     "gulp-stylelint": "^13.0.0",
-    "require-dir": "^1.2.0",
-    "stylelint": "^13.8.0",
+    "stylelint": "^13.0.0",
     "stylelint-config-mygento": "1.0.0-beta2"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.2.1"
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
   },
   "eslintConfig": {
     "extends": "mygento",

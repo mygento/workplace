@@ -1,4 +1,5 @@
-const debug = require('debug')('workplace:config');
+import createDebug from 'debug';
+const debug = createDebug('workplace:config');
 
 const getServiceConfig = (config, override, service, workplaceConfig) => {
   if (
@@ -61,4 +62,4 @@ const mergeConfig = (config, appDirectory, override = {}) => {
   return workplaceConfig;
 };
 
-exports.mergeConfig = mergeConfig;
+export { mergeConfig };

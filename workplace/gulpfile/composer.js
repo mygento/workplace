@@ -1,5 +1,6 @@
-const debug = require('debug')('workplace:composer');
-const spawn = require('child_process').spawn;
+import createDebug from 'debug';
+const debug = createDebug('workplace:composer');
+import { spawn } from 'child_process';
 
 const runCommand = (command, directory, cb, ignore = true) => {
   const commandList = ignore ? [command, '--ignore-platform-reqs'] : [command];
@@ -20,11 +21,11 @@ const runCommand = (command, directory, cb, ignore = true) => {
   });
 };
 
-exports.composerCommand = (cb, command, config) => {
+export function composerCommand(cb, command, config) {
   debug(`${config.appDirectory}/composer.json`);
   if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
     cb();
     return;
   }
   runCommand(command, config.appDirectory, cb);
-};
+}

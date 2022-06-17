@@ -1,8 +1,9 @@
-const spawn = require('child_process').spawn;
-const path = require('path');
-const fs = require('fs');
+import os from 'os';
+import { spawn } from 'child_process';
+import { join, resolve } from 'path';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 
-const { PROJECT_FILE, updateGitignore } = require('./gitignore');
+import { PROJECT_FILE, updateGitignore } from './gitignore.js';
 
 const getVolumeName = (projectType, type) => `${projectType}-${type}`;
 const networkName = 'net';
@@ -119,12 +120,12 @@ const fileTemplate = (
 }, null, 2);
 
 const runCommand = (command, config, cb) => {
-  fs.writeFileSync(
-    path.join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
+  writeFileSync(
+    join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
     fileTemplate(
       config.type,
       config.appDirectory,
-      path.resolve(`../nginx/${config.type}`),
+      resolve(`../nginx/${config.type}`),
       config.projectName,
       [config.php.image, config.php.port, config.php.env],
       [config.nginx.image,  config.nginx.port, config.nginx.env],
@@ -140,7 +141,7 @@ const runCommand = (command, config, cb) => {
   const cmd = spawn(
     'docker-compose',
     ['-f','docker-compose.json', ...command],
-    { stdio: 'inherit', cwd: path.join(config.appDirectory, PROJECT_FILE) }
+    { stdio: 'inherit', cwd: join(config.appDirectory, PROJECT_FILE) }
   );
   cmd.on('close', function(code) {
     if (code !== 0) {
@@ -154,24 +155,24 @@ const runCommand = (command, config, cb) => {
   });
 };
 
-exports.composeCommand = (cb, command, config) => {
+export function composeCommand(cb, command, config) {
   if (!projectTypes.includes(config.type)) {
     return cb();
   }
   updateGitignore(config.appDirectory);
-  if (!fs.existsSync(path.join(config.appDirectory, PROJECT_FILE))) {
-    fs.mkdirSync(path.join(config.appDirectory, PROJECT_FILE));
+  if (!existsSync(join(config.appDirectory, PROJECT_FILE))) {
+    mkdirSync(join(config.appDirectory, PROJECT_FILE));
   }
 
   process.env.COMPOSE_PROJECT_NAME = config.projectName;
-  process.env.USERID = require('os').userInfo().uid;
+  process.env.USERID = os.userInfo().uid;
 
-  fs.writeFileSync(
-    path.join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
+  writeFileSync(
+    join(config.appDirectory, PROJECT_FILE, 'docker-compose.json'),
     fileTemplate(
       config.type,
       config.appDirectory,
-      path.resolve(`../nginx/${config.type}`),
+      resolve(`../nginx/${config.type}`),
       config.projectName,
       [config.php.image, config.php.port, config.php.env],
       [config.nginx.image,  config.nginx.port, config.nginx.env],
@@ -185,4 +186,4 @@ exports.composeCommand = (cb, command, config) => {
   );
 
   runCommand(command, config, cb);
-};
+}

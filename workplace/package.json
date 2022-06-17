@@ -1,8 +1,9 @@
 {
   "name": "@mygento/workplace",
-  "version": "1.0.0-beta2",
+  "version": "1.0.0-beta3",
   "description": "Workplace",
   "main": "bin/workplace.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mygento/workplace.git"

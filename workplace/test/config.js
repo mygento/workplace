@@ -1,7 +1,7 @@
-const { describe, it } = require('mocha');
+import { describe, it } from 'mocha';
 
-const { assert } = require('chai');
-const mergeConfig = require('../gulpfile/config').mergeConfig;
+import { assert } from 'chai';
+import { mergeConfig } from '../gulpfile/config.js';
 
 describe('Config', function() {
   describe('parse', function() {

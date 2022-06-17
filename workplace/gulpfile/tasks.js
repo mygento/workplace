@@ -1,20 +1,25 @@
-const path = require('path');
-const fs = require('fs');
-const debug = require('debug')('workplace:tasks');
+import { resolve, join } from 'path';
+import { realpathSync, readFileSync } from 'fs';
+import { PROJECT_FILE, fileExists } from './gitignore.js';
+import { mergeConfig } from './config.js';
+import { watchLintJs } from './watch.js';
+import { lintJs, fixJs } from './lint.js';
+import { composeCommand } from './docker.js';
+import { composerCommand } from './composer.js';
+import createDebug from 'debug';
 
-const { PROJECT_FILE, fileExists } = require('./gitignore');
-const { mergeConfig } = require('./config');
+const debug = createDebug('workplace:tasks');
+const appDirectory = realpathSync(process.env.PWD);
+const resolveApp = relativePath => resolve(appDirectory, relativePath);
+const jsonFile = (file) => JSON.parse(
+  readFileSync(
+    new URL(file, import.meta.url)
+  )
+);
 
-const appDirectory = fs.realpathSync(process.env.PWD);
-const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
-const config = require(resolveApp('package.json'));
-const overrideFile = resolveApp(path.join(PROJECT_FILE,'config.local.json'));
-const override = fileExists(overrideFile) ? require(overrideFile) : {};
-
-const { watchLintStyles, watchLintJs } = require('./watch');
-const { lintStyle, lintJs, fixStyle, fixJs } = require('./lint');
-const { composeCommand } = require('./docker');
-const { composerCommand } = require('./composer');
+const config = jsonFile(resolveApp('package.json'));
+const overrideFile = resolveApp(join(PROJECT_FILE,'config.local.json'));
+const override = fileExists(overrideFile) ? jsonFile(overrideFile) : {};
 
 // Global Config
 const workplaceConfig = mergeConfig(config, appDirectory, override);
@@ -62,16 +67,6 @@ debug('lintJs Glob', lintJsGlob);
 debug('lintStyle Glob', lintStyleGlob);
 
 // Tasks
-const watchLintStylesTask = (cb) => {
-  if (lintStyleGlob.length === 0) {
-    return cb();
-  }
-  return watchLintStyles(
-    lintStyleGlob.map((f) => `${f}/**/*.scss`)
-  );
-};
-watchLintStylesTask.displayName = 'watch lint scss';
-
 const watchLintJsTask = (cb) => {
   if (lintJsGlob.length === 0) {
     return cb();
@@ -86,34 +81,20 @@ const lintJsTask = (cb) => {
   if (lintJsGlob.length === 0) {
     return cb();
   }
+
+  process.chdir(appDirectory);
+
   return lintJs(lintJsGlob.map((f) => `${f}/**/*.js`));
 };
 lintJsTask.displayName = 'js lint';
-
-const lintStyleTask = (cb) => {
-  if (lintStyleGlob.length === 0) {
-    return cb();
-  }
-  return lintStyle(
-    lintStyleGlob.map((f) => `${f}/**/*.scss`)
-  );
-};
-lintStyleTask.displayName = 'style lint';
-
-const fixStyleTask = (cb) => {
-  if (lintStyleGlob.length === 0) {
-    return cb();
-  }
-  return fixStyle(
-    lintStyleGlob.map((f) => `${f}/**/*.scss`)
-  );
-};
-fixStyle.displayName = 'style lint autofix';
 
 const fixJsTask = (cb) => {
   if (lintJsGlob.length === 0) {
     return cb();
   }
+
+  process.chdir(appDirectory);
+
   return fixJs(
     lintJsGlob.map((f) => `${f}/**/*.js`)
   );
@@ -133,14 +114,14 @@ rmDockerTask.displayName = 'docker';
 const composerInstallTask = (cb) => composerCommand(
   cb, 'install', workplaceConfig
 );
+composerInstallTask.displayName = 'composer';
 
-exports.lintStyleTask = lintStyleTask;
-exports.lintJsTask = lintJsTask;
-exports.startDockerTask = startDockerTask;
-exports.stopDockerTask = stopDockerTask;
-exports.rmDockerTask = rmDockerTask;
-exports.watchLintStylesTask = watchLintStylesTask;
-exports.watchLintJsTask = watchLintJsTask;
-exports.fixStyleTask = fixStyleTask;
-exports.fixJsTask = fixJsTask;
-exports.composerTask = composerInstallTask;
+export {
+  lintJsTask,
+  startDockerTask,
+  stopDockerTask,
+  rmDockerTask,
+  watchLintJsTask,
+  fixJsTask,
+  composerInstallTask
+ };

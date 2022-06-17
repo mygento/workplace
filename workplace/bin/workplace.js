@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 'use strict';
+import { sync } from 'cross-spawn';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 process.on('unhandledRejection', err => {
   throw err;
 });
 
-const spawn = require('cross-spawn');
 const args = process.argv.slice(2);
 
 const scriptIndex = args.findIndex(
@@ -22,9 +27,9 @@ switch (script) {
   case 'lint':
   case 'delete':
   case 'start': {
-    const result = spawn.sync(
+    const result = sync(
       'gulp',
-      ['-f', require.resolve('../gulpfile'), script],
+      ['-f', resolve(__dirname, '../gulpfile/index.js'), script],
       { stdio: 'inherit' }
     );
     if (result.signal) {
@@ -40,7 +45,6 @@ switch (script) {
       process.exit(1);
     }
     process.exit(result.status);
-    break;
   }
   default:
     console.log('Unknown script "' + script + '".');

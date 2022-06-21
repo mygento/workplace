@@ -55,10 +55,20 @@ const jsFolders = (type) => {
   return [];
 };
 
+const themeFolders = (type) => {
+  switch (type) {
+    case 'magento2': {
+      return ((workplaceConfig.magento2 || {}).theme || []);
+    }
+  }
+  return [];
+};
+
 // Theme config
 const styleGlob = styleGlobs(workplaceConfig.type);
 const lintJsGlob = [...(jsFolders(workplaceConfig.type) || [])];
 const lintStyleGlob = [...styleGlob, ...styleGlob.map(f => `!${f}/vendor`)];
+const themeFolder = themeFolders(workplaceConfig.type) || [];
 
 // DEBUG
 debug('real config', workplaceConfig);
@@ -123,5 +133,9 @@ export {
   rmDockerTask,
   watchLintJsTask,
   fixJsTask,
-  composerInstallTask
+  composerInstallTask,
+  styleGlob,
+  lintStyleGlob,
+  themeFolder,
+  resolveApp
  };

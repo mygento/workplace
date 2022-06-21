@@ -8,6 +8,23 @@ import {
   composerInstallTask
 } from './tasks.js';
 
+const loadModule = async (modulePath) => {
+  try {
+    return await import(modulePath)
+  } catch (e) {
+    return {};
+  }
+};
+
+const {
+  styleTask, watchStylesTask,
+  lintStyleTask, fixStyleTask,
+  watchLintStylesTask
+} = await loadModule('@mygento/frontend-native');
+
+const fallback = (cb) => cb();
+fallback.displayName = 'do nothing';
+
 export const install  = series(
   composerInstallTask
 );
@@ -21,16 +38,26 @@ export const remove = series(
   rmDockerTask
 );
 
+export const build =  parallel(
+  styleTask ? styleTask : fallback
+);
+
 export const lint =  parallel(
-  lintJsTask
+  lintJsTask,
+  lintStyleTask ? lintStyleTask: fallback
 );
 
 export const test = parallel(
-  fixJsTask
+  fixJsTask,
+  fixStyleTask? fixStyleTask : fallback
 );
 
 export const start = parallel(
-  watchLintJsTask,
   startDockerTask,
-  lintJsTask
+  lintJsTask,
+  watchLintJsTask,
+  styleTask ? styleTask : fallback,
+  watchStylesTask ? watchStylesTask : fallback,
+  lintStyleTask ? lintStyleTask: fallback,
+  watchLintStylesTask ? watchLintStylesTask : fallback
 );

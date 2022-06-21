@@ -1,9 +1,9 @@
 {
-  "name": "@mygento/workplace",
-  "version": "1.0.0-beta6",
-  "description": "Workplace",
-  "main": "bin/workplace.js",
+  "name": "@mygento/frontend-native",
+  "version": "1.0.0-beta4",
+  "description": "Workplace Native Theme",
   "type": "module",
+  "main": "tasks/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mygento/workplace.git"
@@ -13,23 +13,22 @@
   "bugs": {
     "url": "https://github.com/mygento/workplace/issues"
   },
-  "bin": {
-    "workplace": "./bin/workplace.js"
-  },
   "homepage": "https://github.com/mygento/workplace#readme",
   "dependencies": {
-    "chalk": "^5.0.1",
-    "cross-spawn": "^7.0.3",
-    "debug": "^4.3.1",
-    "eslint-config-mygento": "^1.0.0-beta4",
+    "@mygento/workplace": "^1.0.0-beta6",
+    "cssnano": "^5.1.12",
     "gulp": "^4.0.2",
     "gulp-debug": "^4.0.0",
-    "gulp-eslint": "^6.0.0"
+    "gulp-notify": "^4.0.0",
+    "gulp-postcss": "^9.0.1",
+    "gulp-sass": "^5.1.0",
+    "gulp-sass-parent": "^2.0.2",
+    "node-normalize-scss": "^8.1.2",
+    "postcss": "^8.2.15",
+    "sass": "^1.52.3",
+    "sassime": "^1.2.0"
   },
-  "devDependencies": {
-    "chai": "^4.3.6",
-    "mocha": "^10.0.0"
-  },
+  "devDependencies": {},
   "eslintConfig": {
     "extends": "mygento",
     "env": {
@@ -39,8 +38,5 @@
       "ecmaVersion": 6,
       "sourceType": "module"
     }
-  },
-  "scripts": {
-    "test": "mocha"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@mygento/frontend-native",
-  "version": "1.0.0-beta4",
+  "version": "1.0.0-beta6",
   "description": "Workplace Native Theme",
   "type": "module",
   "main": "tasks/index.js",
@@ -14,6 +14,9 @@
     "url": "https://github.com/mygento/workplace/issues"
   },
   "homepage": "https://github.com/mygento/workplace#readme",
+  "engines": {
+    "node": ">=14"
+  },
   "dependencies": {
     "@mygento/workplace": "^1.0.0-beta6",
     "cssnano": "^5.1.12",
@@ -23,6 +26,8 @@
     "gulp-postcss": "^9.0.1",
     "gulp-sass": "^5.1.0",
     "gulp-sass-parent": "^2.0.2",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-stylelint": "^13.0.0",
     "node-normalize-scss": "^8.1.2",
     "postcss": "^8.2.15",
     "sass": "^1.52.3",

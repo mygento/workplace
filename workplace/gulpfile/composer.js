@@ -23,7 +23,7 @@ const runCommand = (command, directory, cb, ignore = true) => {
 
 export function composerCommand(cb, command, config) {
   debug(`${config.appDirectory}/composer.json`);
-  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' || !!process.env.CI) {
     cb();
     return;
   }

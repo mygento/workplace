@@ -1,6 +1,6 @@
 {
   "name": "@mygento/frontend-native",
-  "version": "1.0.0-beta6",
+  "version": "1.0.0",
   "description": "Workplace Native Theme",
   "type": "module",
   "main": "tasks/index.js",
@@ -18,7 +18,7 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@mygento/workplace": "^1.0.0-beta6",
+    "@mygento/workplace": "^1.0.0",
     "cssnano": "^5.1.12",
     "gulp": "^4.0.2",
     "gulp-debug": "^4.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "@mygento/workplace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Workplace",
   "main": "bin/workplace.js",
   "type": "module",

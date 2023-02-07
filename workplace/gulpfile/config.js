@@ -7,9 +7,22 @@ const getServiceConfig = (config, override, service, workplaceConfig) => {
     !Object.prototype.hasOwnProperty.call(override, service)) {
     return;
   }
-  const { image: image1 = false, port: port1 = false  } = override[service] || {};
-  const { image: image2 = false, port: port2 = false  } = config[service] || {};
-  return workplaceConfig[service] = { image: image1 ? image1 : image2, port: port1 ? port1: port2 };
+  const {
+    image: image1 = false,
+    port: port1 = false,
+    environment: env1 = []
+  } = override[service] || {};
+  const {
+    image: image2 = false,
+    port: port2 = false,
+    environment: env2 = []
+  } = config[service] || {};
+
+  return workplaceConfig[service] = {
+    image: image1 ? image1 : image2,
+    port: port1 ? port1: port2,
+    environment: env1 && env1.length > 0 ? env1 : env2
+  };
 };
 
 const mergeConfig = (config, appDirectory, override = {}) => {

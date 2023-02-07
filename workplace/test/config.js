@@ -223,7 +223,8 @@ describe('Config', function() {
           php: { image: 'ghcr.io/mygento/php:7.3-full' },
           redis: {
             image: 'redis',
-            port: false
+            port: false,
+            environment: [],
           },
           projectName: 'workplace',
           type: 'magento2',
@@ -238,7 +239,7 @@ describe('Config', function() {
 
     it('elastic', function() {
       const config = mergeConfig({
-        workplace: { type: 'magento2', elasticsearch: { image: 'elastic', port: 9300 } },
+        workplace: { type: 'magento2', elasticsearch: { image: 'elastic', port: 9300,  environment: ['XXX=1'] } },
       }, '');
       console.log(config);
       assert.deepEqual(
@@ -250,7 +251,8 @@ describe('Config', function() {
           php: { image: 'ghcr.io/mygento/php:7.3-full' },
           elasticsearch: {
             image: 'elastic',
-            port: 9300
+            port: 9300,
+            environment: ['XXX=1'],
           },
           projectName: 'workplace',
           type: 'magento2',
@@ -277,7 +279,8 @@ describe('Config', function() {
           php: { image: 'ghcr.io/mygento/php:7.3-full' },
           varnish: {
             image: 'varnish',
-            port: false
+            port: false,
+            environment: [],
           },
           projectName: 'workplace',
           type: 'magento2',
@@ -304,7 +307,8 @@ describe('Config', function() {
           php: { image: 'ghcr.io/mygento/php:7.3-full' },
           clickhouse: {
             image: 'clickhouse',
-            port: 123
+            port: 123,
+            environment: [],
           },
           projectName: 'workplace',
           type: 'magento2',

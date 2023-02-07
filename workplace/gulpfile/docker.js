@@ -8,14 +8,15 @@ import { PROJECT_FILE, updateGitignore } from './gitignore.js';
 const getVolumeName = (projectType, type) => `${projectType}-${type}`;
 const networkName = 'net';
 
-const projectTypes = ['magento1', 'magento2', 'symfony'];
+const projectTypes = ['magento2', 'symfony'];
 
 const getServiceConfig = (config, service) => {
   if (!Object.prototype.hasOwnProperty.call(config, service)) {
     return [false, false];
   }
-  const { image = false, port = false  } = config[service];
-  return [image, port];
+  const { image = false, port = false, environment = [] } = config[service];
+
+  return [image, port, environment];
 };
 
 const optionalService = (

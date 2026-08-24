@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Run pre-release
+        uses: goreleaser/goreleaser-action@v7
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          args: release --clean --snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+      
+      - name: Run release 
+        uses: goreleaser/goreleaser-action@v7
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 5
+          name: binaries
+          path: dist

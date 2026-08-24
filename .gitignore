@@ -1,0 +1,7 @@
+# Added by goreleaser init:
+dist/
+binaries/
+binaries.zip
+goreleaser
+.workplace
+workplace

@@ -14,10 +14,7 @@ type Server struct {
 
 func Start(cfg Config) (*Server, error) {
 	if _, err := os.Stat(cfg.Root); err != nil {
-		return nil, fmt.Errorf(
-			"document root does not exist: %s",
-			cfg.Root,
-		)
+		return nil, fmt.Errorf("document root does not exist: %s", cfg.Root)
 	}
 
 	binary, err := exec.LookPath("nginx")
@@ -44,10 +41,7 @@ func Start(cfg Config) (*Server, error) {
 
 	output, err := testCmd.CombinedOutput()
 	if err != nil {
-		return nil, fmt.Errorf(
-			"nginx configuration is invalid:\n%s",
-			string(output),
-		)
+		return nil, fmt.Errorf("nginx configuration is invalid:\n%s", string(output))
 	}
 
 	cmd := exec.Command(
@@ -59,57 +53,40 @@ func Start(cfg Config) (*Server, error) {
 		"-g",
 		"daemon off;",
 	)
-
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf(
-			"start Nginx: %w",
-			err,
-		)
+		return nil, fmt.Errorf("start Nginx: %w", err)
 	}
 
-	server := &Server{
-		cmd: cmd,
-	}
+	server := &Server{cmd: cmd}
 
 	// Give Nginx a moment to fail on things such as an occupied port.
 	time.Sleep(100 * time.Millisecond)
 
-	if cmd.ProcessState != nil &&
-		cmd.ProcessState.Exited() {
-		return nil, fmt.Errorf(
-			"nginx exited during startup",
-		)
+	if cmd.ProcessState != nil && cmd.ProcessState.Exited() {
+		return nil, fmt.Errorf("nginx exited during startup")
 	}
 
-	fmt.Printf(
-		"Nginx started (pid %d)\n",
-		cmd.Process.Pid,
-	)
+	fmt.Printf("Nginx started (pid %d)\n", cmd.Process.Pid)
 
 	return server, nil
 }
 
 func (s *Server) Stop() error {
-	if s == nil ||
-		s.cmd == nil ||
-		s.cmd.Process == nil {
+	if s == nil || s.cmd == nil || s.cmd.Process == nil {
 		return nil
 	}
 
-	if s.cmd.ProcessState != nil &&
-		s.cmd.ProcessState.Exited() {
+	if s.cmd.ProcessState != nil && s.cmd.ProcessState.Exited() {
 		return nil
 	}
 
 	fmt.Println("Stopping Nginx...")
 
 	// SIGQUIT = graceful Nginx shutdown.
-	if err := s.cmd.Process.Signal(
-		syscall.SIGQUIT,
-	); err != nil {
+	if err := s.cmd.Process.Signal(syscall.SIGQUIT); err != nil {
 		return err
 	}
 
@@ -124,14 +101,20 @@ func (s *Server) Stop() error {
 		return err
 
 	case <-time.After(10 * time.Second):
-		fmt.Println(
-			"Nginx did not stop gracefully; killing it",
-		)
+		fmt.Println("Nginx did not stop gracefully; killing it")
 
-		_ = s.cmd.Process.Kill()
+		killErr := s.cmd.Process.Kill()
+		waitErr := <-done
 
-		<-done
+		// The process may already have exited between the timeout and Kill.
+		if killErr != nil {
+			if waitErr != nil {
+				return fmt.Errorf("kill Nginx: %w (wait: %v)", killErr, waitErr)
+			}
+			return nil
+		}
 
+		// A non-nil Wait error is expected when the process was killed.
 		return nil
 	}
 }

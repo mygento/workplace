@@ -5,3 +5,5 @@ binaries.zip
 goreleaser
 .workplace
 workplace
+package.json
+composer.json

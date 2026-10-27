@@ -27,7 +27,9 @@ func (l *Loader) Load() (Config, error) {
 		)
 	}
 
-	projectConfig, err := readConfig(configPath(root), false)
+	projectPath := configPath(root)
+
+	projectConfig, err := readConfig(projectPath, false)
 	if err != nil {
 		return Config{}, err
 	}
@@ -36,8 +38,12 @@ func (l *Loader) Load() (Config, error) {
 	if projectType == "" {
 		return Config{}, fmt.Errorf(
 			"project type is missing in %s",
-			configPath(root),
+			projectPath,
 		)
+	}
+
+	if err := validateManagedOverrides(projectConfig, projectPath); err != nil {
+		return Config{}, err
 	}
 
 	cfg, err := defaults(projectType)
@@ -45,11 +51,13 @@ func (l *Loader) Load() (Config, error) {
 		return Config{}, err
 	}
 
-	if err := mergeConfig(&cfg, projectConfig); err != nil {
+	if err := mergeConfig(&cfg, projectConfig, false); err != nil {
 		return Config{}, fmt.Errorf("merge project config: %w", err)
 	}
 
-	localConfig, err := readConfig(localConfigPath(root), true)
+	localPath := localConfigPath(root)
+
+	localConfig, err := readConfig(localPath, true)
 	if err != nil {
 		return Config{}, err
 	}
@@ -61,6 +69,7 @@ func (l *Loader) Load() (Config, error) {
 			cfg.Type,
 		)
 	}
+
 	if localConfig.Name != "" {
 		return Config{}, fmt.Errorf(
 			"local configuration cannot change project name %q",
@@ -68,11 +77,12 @@ func (l *Loader) Load() (Config, error) {
 		)
 	}
 
-	if err := mergeConfig(&cfg, localConfig); err != nil {
+	if err := mergeConfig(&cfg, localConfig, true); err != nil {
 		return Config{}, fmt.Errorf("merge local config: %w", err)
 	}
 
 	cfg.ProjectDir = root
+
 	return cfg, nil
 }
 
@@ -94,11 +104,33 @@ func readConfig(path string, optional bool) (Config, error) {
 	return cfg, nil
 }
 
-func mergeConfig(dst *Config, src Config) error {
+// validateManagedOverrides prevents shared project configuration from
+// controlling local native service lifecycle.
+func validateManagedOverrides(cfg Config, path string) error {
+	for name, service := range cfg.Services {
+		if service.Managed != nil {
+			return fmt.Errorf(
+				"services.%s.managed is only allowed in %s",
+				name,
+				localConfigPath(filepath.Dir(path)),
+			)
+		}
+	}
+
+	return nil
+}
+
+// mergeConfig merges service overrides into the resolved configuration.
+// managed is accepted only when allowManaged is true, which is reserved
+// for the local configuration file.
+func mergeConfig(dst *Config, src Config, allowManaged bool) error {
 	for name, override := range src.Services {
 		service, exists := dst.Services[name]
 		if !exists {
-			service = Service{}
+			return fmt.Errorf(
+				"unknown service %q in configuration",
+				name,
+			)
 		}
 
 		if override.Image != "" {
@@ -118,6 +150,18 @@ func mergeConfig(dst *Config, src Config) error {
 			for key, value := range override.Env {
 				service.Env[key] = value
 			}
+		}
+
+		if override.Managed != nil {
+			if !allowManaged {
+				return fmt.Errorf(
+					"services.%s.managed is only allowed in local configuration",
+					name,
+				)
+			}
+
+			managed := *override.Managed
+			service.Managed = &managed
 		}
 
 		dst.Services[name] = service

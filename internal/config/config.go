@@ -14,9 +14,16 @@ type Config struct {
 }
 
 type Service struct {
-	Image string            `yaml:"image"`
-	Port  *int              `yaml:"port,omitempty"`
-	Env   map[string]string `yaml:"env,omitempty"`
+	Image   string            `yaml:"image,omitempty"`
+	Port    *int              `yaml:"port,omitempty"`
+	Env     map[string]string `yaml:"env,omitempty"`
+	Managed *bool             `yaml:"managed,omitempty"`
+}
+
+// IsManaged reports whether Workplace should manage this service locally.
+// Services are managed by default.
+func (s Service) IsManaged() bool {
+	return s.Managed == nil || *s.Managed
 }
 
 func (c *Config) Service(name string) (Service, bool) {

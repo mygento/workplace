@@ -14,14 +14,22 @@ type Config struct {
 }
 
 type Service struct {
-	Image   string            `yaml:"image,omitempty"`
-	Port    *int              `yaml:"port,omitempty"`
-	Env     map[string]string `yaml:"env,omitempty"`
-	Managed *bool             `yaml:"managed,omitempty"`
+	Image     string            `yaml:"image,omitempty"`
+	Port      *int              `yaml:"port,omitempty"`
+	Env       map[string]string `yaml:"env,omitempty"`
+	Volumes   []Volume          `yaml:"volumes,omitempty"`
+	DependsOn []string          `yaml:"depends_on,omitempty"`
+	Managed   *bool             `yaml:"managed,omitempty"`
 }
 
-// IsManaged reports whether Workplace should manage this service locally.
-// Services are managed by default.
+type Volume struct {
+	Name     string `yaml:"name,omitempty"`
+	Source   string `yaml:"source,omitempty"`
+	Target   string `yaml:"target"`
+	Type     string `yaml:"type,omitempty"`
+	ReadOnly bool   `yaml:"read_only,omitempty"`
+}
+
 func (s Service) IsManaged() bool {
 	return s.Managed == nil || *s.Managed
 }
@@ -44,47 +52,148 @@ func intPtr(value int) *int {
 	return &value
 }
 
+var optionalServices = map[string]struct{}{
+	"redis":         {},
+	"elasticsearch": {},
+	"varnish":       {},
+	"clickhouse":    {},
+	"rabbitmq":      {},
+}
+
+func IsOptionalService(name string) bool {
+	_, ok := optionalServices[name]
+	return ok
+}
+
+func serviceDefaults(projectType, name string) (Service, bool) {
+	projectMount := "/var/www/" + projectType
+
+	switch name {
+	case "php":
+		return Service{
+			Image: "php:8.3-fpm",
+			Env: map[string]string{
+				"PHPFPM_USER": "${USERID}",
+			},
+			Volumes: []Volume{
+				{
+					Source: ".",
+					Target: projectMount,
+					Type:   "bind",
+				},
+			},
+		}, true
+
+	case "nginx":
+		return Service{
+			Image: "nginx:alpine",
+			Port:  intPtr(8080),
+			Env: map[string]string{
+				"NGINX_USER": "${USERID}",
+			},
+			DependsOn: []string{"php"},
+			Volumes: []Volume{
+				{
+					Source:   ".",
+					Target:   projectMount,
+					Type:     "bind",
+					ReadOnly: true,
+				},
+			},
+		}, true
+
+	case "mysql":
+		return Service{
+			Image: "mysql:8.4",
+			Env: map[string]string{
+				"MYSQL_DATABASE":      projectType,
+				"MYSQL_USER":          "mygento",
+				"MYSQL_PASSWORD":      "mygento",
+				"MYSQL_ROOT_PASSWORD": "mygento",
+			},
+			Volumes: []Volume{
+				{
+					Name:   projectType + "-db",
+					Target: "/var/lib/mysql",
+					Type:   "volume",
+				},
+			},
+		}, true
+
+	case "redis":
+		return Service{
+			Image: "redis:alpine",
+		}, true
+
+	case "elasticsearch":
+		return Service{
+			Image: "opensearchproject/opensearch:1.2.4",
+			Env: map[string]string{
+				"discovery.type":          "single-node",
+				"DISABLE_SECURITY_PLUGIN": "true",
+			},
+			Volumes: []Volume{
+				{
+					Name:   "elastic",
+					Target: "/usr/share/opensearch/data",
+					Type:   "volume",
+				},
+			},
+		}, true
+
+	case "varnish":
+		return Service{
+			Image: "varnish:stable",
+			Port:  intPtr(8081),
+		}, true
+
+	case "clickhouse":
+		return Service{
+			Image: "clickhouse/clickhouse-server:latest",
+			Port:  intPtr(8123),
+			Volumes: []Volume{
+				{
+					Name:   "clickhouse",
+					Target: "/var/lib/clickhouse",
+					Type:   "volume",
+				},
+			},
+		}, true
+
+	case "rabbitmq":
+		return Service{
+			Image: "rabbitmq:management",
+			Port:  intPtr(5672),
+			Volumes: []Volume{
+				{
+					Name:   "rabbitmq",
+					Target: "/var/lib/rabbitmq",
+					Type:   "volume",
+				},
+			},
+		}, true
+
+	default:
+		return Service{}, false
+	}
+}
+
 func defaults(projectType string) (Config, error) {
-	var services map[string]Service
+	projectType = normalizeType(projectType)
 
-	switch normalizeType(projectType) {
-	case "magento2":
-		services = map[string]Service{
-			"php": {
-				Image: "php:8.3-fpm",
-			},
-			"nginx": {
-				Image: "nginx:alpine",
-				Port:  intPtr(8080),
-			},
-			"mysql": {
-				Image: "mysql:8.4",
-				Env: map[string]string{
-					"MYSQL_DATABASE":      "magento",
-					"MYSQL_USER":          "magento",
-					"MYSQL_PASSWORD":      "magento",
-					"MYSQL_ROOT_PASSWORD": "root",
-				},
-			},
-			"opensearch": {
-				Image: "opensearchproject/opensearch:latest",
-				Env: map[string]string{
-					"discovery.type":          "single-node",
-					"DISABLE_SECURITY_PLUGIN": "true",
-				},
-			},
+	switch projectType {
+	case "magento2", "symfony":
+		services := make(map[string]Service)
+
+		for _, name := range []string{"php", "nginx", "mysql"} {
+			service, _ := serviceDefaults(projectType, name)
+			services[name] = service
 		}
 
-	case "symfony":
-		services = map[string]Service{
-			"php": {
-				Image: "php:8.3-fpm",
-			},
-			"nginx": {
-				Image: "nginx:alpine",
-				Port:  intPtr(8080),
-			},
-		}
+		return Config{
+			Type:     projectType,
+			Services: services,
+		}, nil
 
 	default:
 		return Config{}, fmt.Errorf(
@@ -92,11 +201,6 @@ func defaults(projectType string) (Config, error) {
 			projectType,
 		)
 	}
-
-	return Config{
-		Type:     normalizeType(projectType),
-		Services: services,
-	}, nil
 }
 
 func configPath(projectDir string) string {

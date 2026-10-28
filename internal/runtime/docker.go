@@ -2,40 +2,19 @@ package runtime
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
-	"sort"
+	"strconv"
 	"strings"
-	"sync"
 
-	"github.com/docker/cli/cli/command"
-	"github.com/docker/cli/cli/flags"
-	"github.com/docker/compose/v5/cmd/display"
-	"github.com/docker/compose/v5/pkg/api"
-	"github.com/docker/compose/v5/pkg/compose"
 	"github.com/mygento/workplace/internal/config"
-	"gopkg.in/yaml.v3"
 )
 
-type DockerRuntime struct {
-	mu      sync.Mutex
-	service api.Compose
-	project string
-	loaded  bool
-}
-
-type composeConfig struct {
-	Name     string                          `yaml:"name"`
-	Services map[string]composeConfigService `yaml:"services"`
-}
-
-type composeConfigService struct {
-	Image       string            `yaml:"image"`
-	Environment map[string]string `yaml:"environment,omitempty"`
-	Ports       []string          `yaml:"ports,omitempty"`
-}
+type DockerRuntime struct{}
 
 func NewDocker() *DockerRuntime {
 	return &DockerRuntime{}
@@ -51,9 +30,11 @@ func dockerProjectName(cfg config.Config) string {
 
 	name = invalidProjectName.ReplaceAllString(name, "-")
 	name = strings.Trim(name, "-_")
-	if name == "" {
+
+	if name == "" || name == "." {
 		name = "workplace"
 	}
+
 	if name[0] < 'a' || name[0] > 'z' {
 		name = "workplace-" + name
 	}
@@ -61,180 +42,179 @@ func dockerProjectName(cfg config.Config) string {
 	return name
 }
 
+func dockerRuntimeDir(cfg config.Config) string {
+	return filepath.Join(cfg.ProjectDir, ".workplace", "runtime")
+}
+
+func dockerComposePath(cfg config.Config) string {
+	return filepath.Join(dockerRuntimeDir(cfg), "compose.yaml")
+}
+
+func dockerCommandEnvironment(cfg config.Config) []string {
+	env := os.Environ()
+
+	env = setEnvironmentValue(
+		env,
+		"COMPOSE_PROJECT_NAME",
+		dockerProjectName(cfg),
+	)
+
+	env = setEnvironmentValue(
+		env,
+		"USERID",
+		strconv.Itoa(os.Getuid()),
+	)
+
+	return env
+}
+
+func setEnvironmentValue(env []string, key, value string) []string {
+	prefix := key + "="
+	result := make([]string, 0, len(env)+1)
+
+	for _, entry := range env {
+		if !strings.HasPrefix(entry, prefix) {
+			result = append(result, entry)
+		}
+	}
+
+	return append(result, prefix+value)
+}
+
+func (r *DockerRuntime) runCompose(
+	ctx context.Context,
+	cfg config.Config,
+	args ...string,
+) ([]byte, error) {
+	if _, err := exec.LookPath("docker"); err != nil {
+		return nil, fmt.Errorf("docker CLI not found: %w", err)
+	}
+
+	composePath := dockerComposePath(cfg)
+	if _, err := os.Stat(composePath); err != nil {
+		return nil, fmt.Errorf(
+			"access Compose configuration %s: %w",
+			composePath,
+			err,
+		)
+	}
+
+	commandArgs := []string{
+		"compose",
+		"--project-name", dockerProjectName(cfg),
+		"--file", composePath,
+	}
+	commandArgs = append(commandArgs, args...)
+
+	return runCommandWithEnv(
+		ctx,
+		dockerCommandEnvironment(cfg),
+		"docker",
+		commandArgs...,
+	)
+}
+
 func (r *DockerRuntime) Start(
 	ctx context.Context,
 	cfg config.Config,
 ) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	if r.loaded {
-		return nil
+	if cfg.ProjectDir == "" {
+		return fmt.Errorf("project directory is not configured")
 	}
 
-	fmt.Println("Initializing Docker runtime...")
+	composePath := dockerComposePath(cfg)
 
-	dockerCLI, err := command.NewDockerCli()
-	if err != nil {
-		return fmt.Errorf("create Docker client: %w", err)
+	if err := writeCompose(cfg, composePath); err != nil {
+		return fmt.Errorf("render Docker Compose configuration: %w", err)
 	}
 
-	if err := dockerCLI.Initialize(&flags.ClientOptions{}); err != nil {
-		return fmt.Errorf("initialize Docker client: %w", err)
-	}
-
-	fmt.Println("Initializing Docker Compose SDK...")
-
-	service, err := compose.NewComposeService(
-		dockerCLI,
-		compose.WithEventProcessor(display.Plain(os.Stdout)),
+	output, err := r.runCompose(
+		ctx,
+		cfg,
+		"up",
+		"-d",
+		"--remove-orphans",
 	)
 	if err != nil {
-		return fmt.Errorf("initialize compose sdk: %w", err)
-	}
-
-	projectName := dockerProjectName(cfg)
-
-	services := make(map[string]composeConfigService)
-	names := make([]string, 0, len(cfg.Services))
-
-	for name := range cfg.Services {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-
-	for _, name := range names {
-		svc := cfg.Services[name]
-
-		if !svc.IsManaged() {
-			fmt.Printf("Skipping unmanaged service %q\n", name)
-			continue
-		}
-
-		if strings.TrimSpace(svc.Image) == "" {
-			return fmt.Errorf("service %q has no image", name)
-		}
-
-		entry := composeConfigService{
-			Image:       svc.Image,
-			Environment: svc.Env,
-		}
-
-		if svc.Port != nil {
-			containerPort, ok := dockerContainerPort(name)
-			if !ok {
-				return fmt.Errorf(
-					"cannot infer container port for service %q; add explicit container-port configuration",
-					name,
-				)
-			}
-
-			entry.Ports = []string{
-				fmt.Sprintf("%d:%d", *svc.Port, containerPort),
-			}
-		}
-
-		services[name] = entry
-	}
-
-	if len(services) == 0 {
-		return fmt.Errorf("no managed services to start")
-	}
-
-	runtimeDir := filepath.Join(
-		cfg.ProjectDir,
-		".workplace",
-		"runtime",
-	)
-
-	if err := os.MkdirAll(runtimeDir, 0755); err != nil {
-		return fmt.Errorf("create runtime directory: %w", err)
-	}
-
-	composePath := filepath.Join(runtimeDir, "compose.yaml")
-
-	data, err := yaml.Marshal(composeConfig{
-		Name:     projectName,
-		Services: services,
-	})
-	if err != nil {
-		return fmt.Errorf("marshal Compose configuration: %w", err)
-	}
-
-	if err := os.WriteFile(composePath, data, 0600); err != nil {
-		return fmt.Errorf("write Compose configuration: %w", err)
-	}
-
-	fmt.Printf("Loading Docker Compose project %q...\n", projectName)
-
-	project, err := service.LoadProject(ctx, api.ProjectLoadOptions{
-		ConfigPaths: []string{composePath},
-		ProjectName: projectName,
-	})
-	if err != nil {
-		return fmt.Errorf("load Compose project: %w", err)
-	}
-
-	fmt.Println("Starting Docker services...")
-
-	if err := service.Up(ctx, project, api.UpOptions{
-		Create: api.CreateOptions{},
-		Start:  api.StartOptions{},
-	}); err != nil {
 		return fmt.Errorf(
-			"start Compose project %q: %w",
-			projectName,
+			"start Docker Compose project %q: %w: %s",
+			dockerProjectName(cfg),
+			err,
+			strings.TrimSpace(string(output)),
+		)
+	}
+
+	fmt.Printf(
+		"started Docker Compose project %q\n",
+		dockerProjectName(cfg),
+	)
+	return nil
+}
+
+func (r *DockerRuntime) Stop(
+	ctx context.Context,
+	cfg config.Config,
+) error {
+	composePath := dockerComposePath(cfg)
+
+	if _, err := os.Stat(composePath); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("access Compose configuration: %w", err)
+	}
+
+	output, err := r.runCompose(ctx, cfg, "stop")
+	if err != nil {
+		return fmt.Errorf(
+			"stop Docker Compose project %q: %w: %s",
+			dockerProjectName(cfg),
+			err,
+			strings.TrimSpace(string(output)),
+		)
+	}
+
+	fmt.Printf(
+		"stopped Docker Compose project %q\n",
+		dockerProjectName(cfg),
+	)
+	return nil
+}
+
+func (r *DockerRuntime) Delete(
+	ctx context.Context,
+	cfg config.Config,
+) error {
+	composePath := dockerComposePath(cfg)
+
+	if _, err := os.Stat(composePath); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("access Compose configuration: %w", err)
+	}
+
+	output, err := r.runCompose(ctx, cfg, "down")
+	if err != nil {
+		return fmt.Errorf(
+			"delete Docker Compose project %q: %w: %s",
+			dockerProjectName(cfg),
+			err,
+			strings.TrimSpace(string(output)),
+		)
+	}
+
+	if err := os.Remove(composePath); err != nil &&
+		!errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf(
+			"remove generated Compose configuration: %w",
 			err,
 		)
 	}
 
-	r.service = service
-	r.project = projectName
-	r.loaded = true
-
-	fmt.Printf("Started Docker Compose project %q\n", projectName)
-
+	fmt.Printf(
+		"deleted Docker Compose project %q\n",
+		dockerProjectName(cfg),
+	)
 	return nil
-}
-
-func (r *DockerRuntime) Stop() error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	if !r.loaded {
-		return nil
-	}
-
-	fmt.Printf("Stopping Docker Compose project %q...\n", r.project)
-
-	if err := r.service.Down(
-		context.Background(),
-		r.project,
-		api.DownOptions{},
-	); err != nil {
-		return fmt.Errorf(
-			"stop Compose project %q: %w",
-			r.project,
-			err,
-		)
-	}
-
-	r.loaded = false
-	r.project = ""
-	r.service = nil
-
-	fmt.Println("Docker Compose project stopped")
-
-	return nil
-}
-
-func dockerContainerPort(name string) (int, bool) {
-	port, ok := map[string]int{
-		"nginx":      80,
-		"php":        9000,
-		"mysql":      3306,
-		"opensearch": 9200,
-	}[name]
-
-	return port, ok
 }

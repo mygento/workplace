@@ -120,17 +120,29 @@ func validateManagedOverrides(cfg Config, path string) error {
 	return nil
 }
 
-// mergeConfig merges service overrides into the resolved configuration.
-// managed is accepted only when allowManaged is true, which is reserved
-// for the local configuration file.
+// mergeConfig merges project or local overrides into the resolved
+// configuration. Optional services are included only if declared
+// in the source configuration.
 func mergeConfig(dst *Config, src Config, allowManaged bool) error {
 	for name, override := range src.Services {
 		service, exists := dst.Services[name]
+
 		if !exists {
-			return fmt.Errorf(
-				"unknown service %q in configuration",
-				name,
-			)
+			if !IsOptionalService(name) {
+				return fmt.Errorf(
+					"unknown service %q in configuration",
+					name,
+				)
+			}
+
+			var ok bool
+			service, ok = serviceDefaults(dst.Type, name)
+			if !ok {
+				return fmt.Errorf(
+					"no defaults defined for service %q",
+					name,
+				)
+			}
 		}
 
 		if override.Image != "" {
@@ -150,6 +162,14 @@ func mergeConfig(dst *Config, src Config, allowManaged bool) error {
 			for key, value := range override.Env {
 				service.Env[key] = value
 			}
+		}
+
+		if override.Volumes != nil {
+			service.Volumes = override.Volumes
+		}
+
+		if override.DependsOn != nil {
+			service.DependsOn = override.DependsOn
 		}
 
 		if override.Managed != nil {

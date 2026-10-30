@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -18,11 +19,23 @@ type composeDocument struct {
 }
 
 type composeService struct {
-	Image       string            `yaml:"image,omitempty"`
-	Environment map[string]string `yaml:"environment,omitempty"`
-	Ports       []string          `yaml:"ports,omitempty"`
-	Volumes     []string          `yaml:"volumes,omitempty"`
-	DependsOn   []string          `yaml:"depends_on,omitempty"`
+	ContainerName string         `yaml:"container_name,omitempty"`
+	Image         string         `yaml:"image,omitempty"`
+	Environment   []quotedString `yaml:"environment,omitempty"`
+	Ports         []quotedString `yaml:"ports,omitempty"`
+	Volumes       []string       `yaml:"volumes,omitempty"`
+	DependsOn     []string       `yaml:"depends_on,omitempty"`
+}
+
+type quotedString string
+
+func (s quotedString) MarshalYAML() (interface{}, error) {
+	return &yaml.Node{
+		Kind:  yaml.ScalarNode,
+		Tag:   "!!str",
+		Value: string(s),
+		Style: yaml.DoubleQuotedStyle,
+	}, nil
 }
 
 type composeVolume struct{}
@@ -30,8 +43,8 @@ type composeVolume struct{}
 func composeServiceName(name string) string {
 	switch name {
 	case "mysql":
-		return "mysql"
-	case "elasticsearch":
+		return "db"
+	case "elasticsearch", "opensearch":
 		return "elastic"
 	default:
 		return name
@@ -50,8 +63,6 @@ func composeContainerPort(name string) (int, bool) {
 		return 9200, true
 	case "varnish":
 		return 80, true
-	case "clickhouse":
-		return 8123, true
 	case "rabbitmq":
 		return 5672, true
 	default:
@@ -149,11 +160,24 @@ func renderCompose(cfg config.Config) ([]byte, error) {
 		entry := composeService{
 			Image: service.Image,
 		}
+		if service.ContainerName != "" {
+			entry.ContainerName = service.ContainerName
+		}
 
 		if len(service.Env) > 0 {
-			entry.Environment = make(map[string]string, len(service.Env))
-			for key, value := range service.Env {
-				entry.Environment[key] = value
+			keys := make([]string, 0, len(service.Env))
+			for key := range service.Env {
+				keys = append(keys, key)
+			}
+			sort.Strings(keys)
+
+			entry.Environment = make([]quotedString, 0, len(service.Env))
+
+			for _, key := range keys {
+				entry.Environment = append(
+					entry.Environment,
+					quotedString(key+"="+service.Env[key]),
+				)
 			}
 		}
 
@@ -166,9 +190,11 @@ func renderCompose(cfg config.Config) ([]byte, error) {
 				)
 			}
 
-			entry.Ports = []string{
-				strconv.Itoa(*service.Port) + ":" +
-					strconv.Itoa(containerPort),
+			entry.Ports = []quotedString{
+				quotedString(
+					strconv.Itoa(*service.Port) + ":" +
+						strconv.Itoa(containerPort),
+				),
 			}
 		}
 

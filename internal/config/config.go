@@ -14,12 +14,13 @@ type Config struct {
 }
 
 type Service struct {
-	Image     string            `yaml:"image,omitempty"`
-	Port      *int              `yaml:"port,omitempty"`
-	Env       map[string]string `yaml:"env,omitempty"`
-	Volumes   []Volume          `yaml:"volumes,omitempty"`
-	DependsOn []string          `yaml:"depends_on,omitempty"`
-	Managed   *bool             `yaml:"managed,omitempty"`
+	Image         string            `yaml:"image,omitempty"`
+	Port          *int              `yaml:"port,omitempty"`
+	Env           map[string]string `yaml:"env,omitempty"`
+	Volumes       []Volume          `yaml:"volumes,omitempty"`
+	DependsOn     []string          `yaml:"depends_on,omitempty"`
+	ContainerName string            `yaml:"container_name,omitempty"`
+	Managed       *bool             `yaml:"managed,omitempty"`
 }
 
 type Volume struct {
@@ -53,11 +54,10 @@ func intPtr(value int) *int {
 }
 
 var optionalServices = map[string]struct{}{
-	"redis":         {},
-	"elasticsearch": {},
-	"varnish":       {},
-	"clickhouse":    {},
-	"rabbitmq":      {},
+	"redis":    {},
+	"elastic":  {},
+	"varnish":  {},
+	"rabbitmq": {},
 }
 
 func IsOptionalService(name string) bool {
@@ -65,7 +65,7 @@ func IsOptionalService(name string) bool {
 	return ok
 }
 
-func serviceDefaults(projectType, name string) (Service, bool) {
+func serviceDefaults(projectType string, projectName string, name string) (Service, bool) {
 	projectMount := "/var/www/" + projectType
 
 	switch name {
@@ -75,6 +75,7 @@ func serviceDefaults(projectType, name string) (Service, bool) {
 			Env: map[string]string{
 				"PHPFPM_USER": "${USERID}",
 			},
+			DependsOn: []string{"db"},
 			Volumes: []Volume{
 				{
 					Source: ".",
@@ -87,7 +88,7 @@ func serviceDefaults(projectType, name string) (Service, bool) {
 	case "nginx":
 		return Service{
 			Image: "nginx:alpine",
-			Port:  intPtr(8080),
+			Port:  intPtr(8081),
 			Env: map[string]string{
 				"NGINX_USER": "${USERID}",
 			},
@@ -99,21 +100,28 @@ func serviceDefaults(projectType, name string) (Service, bool) {
 					Type:     "bind",
 					ReadOnly: true,
 				},
+				{
+					Source:   ".workplace/runtime/nginx",
+					Target:   "/etc/nginx/sites-enabled",
+					Type:     "bind",
+					ReadOnly: true,
+				},
 			},
 		}, true
 
 	case "mysql":
 		return Service{
 			Image: "mysql:8.4",
+			Port:  intPtr(3306),
 			Env: map[string]string{
 				"MYSQL_DATABASE":      projectType,
-				"MYSQL_USER":          "mygento",
 				"MYSQL_PASSWORD":      "mygento",
 				"MYSQL_ROOT_PASSWORD": "mygento",
+				"MYSQL_USER":          "mygento",
 			},
 			Volumes: []Volume{
 				{
-					Name:   projectType + "-db",
+					Name:   projectName + "-db",
 					Target: "/var/lib/mysql",
 					Type:   "volume",
 				},
@@ -125,16 +133,16 @@ func serviceDefaults(projectType, name string) (Service, bool) {
 			Image: "redis:alpine",
 		}, true
 
-	case "elasticsearch":
+	case "elastic":
 		return Service{
-			Image: "opensearchproject/opensearch:1.2.4",
+			Image: "opensearchproject/opensearch:3",
 			Env: map[string]string{
 				"discovery.type":          "single-node",
 				"DISABLE_SECURITY_PLUGIN": "true",
 			},
 			Volumes: []Volume{
 				{
-					Name:   "elastic",
+					Name:   projectName + "-elastic",
 					Target: "/usr/share/opensearch/data",
 					Type:   "volume",
 				},
@@ -145,19 +153,6 @@ func serviceDefaults(projectType, name string) (Service, bool) {
 		return Service{
 			Image: "varnish:stable",
 			Port:  intPtr(8081),
-		}, true
-
-	case "clickhouse":
-		return Service{
-			Image: "clickhouse/clickhouse-server:latest",
-			Port:  intPtr(8123),
-			Volumes: []Volume{
-				{
-					Name:   "clickhouse",
-					Target: "/var/lib/clickhouse",
-					Type:   "volume",
-				},
-			},
 		}, true
 
 	case "rabbitmq":
@@ -178,18 +173,20 @@ func serviceDefaults(projectType, name string) (Service, bool) {
 	}
 }
 
-func defaults(projectType string) (Config, error) {
+func loadDefaults(projectType string, projectName string) (Config, error) {
 	projectType = normalizeType(projectType)
+	services := make(map[string]Service)
+	loadCommonServices(projectType, projectName, services)
 
 	switch projectType {
-	case "magento2", "symfony":
-		services := make(map[string]Service)
-
-		for _, name := range []string{"php", "nginx", "mysql"} {
-			service, _ := serviceDefaults(projectType, name)
-			services[name] = service
-		}
-
+	case "magento2":
+		service, _ := serviceDefaults(projectType, projectName, "elastic")
+		services["elastic"] = service
+		return Config{
+			Type:     projectType,
+			Services: services,
+		}, nil
+	case "symfony":
 		return Config{
 			Type:     projectType,
 			Services: services,
@@ -200,6 +197,18 @@ func defaults(projectType string) (Config, error) {
 			"unknown project type %q",
 			projectType,
 		)
+	}
+}
+
+func loadCommonServices(projectType string, projectName string, services map[string]Service) {
+	for _, name := range []string{"php", "nginx", "mysql"} {
+		service, _ := serviceDefaults(projectType, projectName, name)
+		if name == "mysql" {
+			service.ContainerName = projectName + "-db"
+		} else {
+			service.ContainerName = projectName + "-" + name
+		}
+		services[name] = service
 	}
 }
 

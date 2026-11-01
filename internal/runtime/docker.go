@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/mygento/workplace/internal/config"
+	"github.com/mygento/workplace/internal/project"
 )
 
 type DockerRuntime struct{}
@@ -120,6 +121,12 @@ func (r *DockerRuntime) Start(
 
 	if err := writeCompose(cfg, composePath); err != nil {
 		return fmt.Errorf("render Docker Compose configuration: %w", err)
+	}
+
+	if cfg.HasService("nginx") {
+		if err := project.Install(cfg.ProjectDir, cfg.Type); err != nil {
+			return fmt.Errorf("install project nginx configuration: %w", err)
+		}
 	}
 
 	output, err := r.runCompose(

@@ -55,12 +55,6 @@ func dockerCommandEnvironment(cfg config.Config) []string {
 
 	env = setEnvironmentValue(
 		env,
-		"COMPOSE_PROJECT_NAME",
-		dockerProjectName(cfg),
-	)
-
-	env = setEnvironmentValue(
-		env,
 		"USERID",
 		strconv.Itoa(os.Getuid()),
 	)

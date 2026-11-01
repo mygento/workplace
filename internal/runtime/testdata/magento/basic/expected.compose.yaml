@@ -1,0 +1,45 @@
+name: demo-magento
+services:
+  db:
+    container_name: demo-magento-db
+    image: percona/percona-server:8.0
+    environment:
+      - 'MYSQL_DATABASE=magento2'
+      - 'MYSQL_PASSWORD=mygento'
+      - 'MYSQL_ROOT_PASSWORD=mygento'
+      - 'MYSQL_USER=mygento'
+    ports:
+      - '3306:3306'
+    volumes:
+      - demo-magento-db:/var/lib/mysql
+  elastic:
+    image: opensearchproject/opensearch:3
+    environment:
+      - 'DISABLE_SECURITY_PLUGIN=true'
+      - 'discovery.type=single-node'
+    volumes:
+      - demo-magento-elastic:/usr/share/opensearch/data
+  nginx:
+    container_name: demo-magento-nginx
+    image: nginx:alpine
+    environment:
+      - 'NGINX_USER=${USERID}'
+    ports:
+      - '8081:80'
+    volumes:
+      - .:/var/www/magento2:ro
+      - ./.workplace/runtime/nginx:/etc/nginx/sites-enabled:ro
+    depends_on:
+      - php
+  php:
+    container_name: demo-magento-php
+    image: php:8.5-fpm
+    environment:
+      - 'PHPFPM_USER=${USERID}'
+    volumes:
+      - .:/var/www/magento2
+    depends_on:
+      - db
+volumes:
+  demo-magento-db: {}
+  demo-magento-elastic: {}

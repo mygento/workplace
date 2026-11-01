@@ -1,0 +1,7 @@
+name: demo-magento
+type: magento2
+services:
+  php:
+    image: php:8.5-fpm
+  mysql:
+    image: percona/percona-server:8.0

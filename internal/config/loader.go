@@ -33,6 +33,10 @@ func (l *Loader) Load() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	projectConfig.ProjectDir = root
+	if projectConfig.Name == "" {
+		projectConfig.Name = filepath.Base(filepath.Clean(root))
+	}
 
 	projectType := normalizeType(projectConfig.Type)
 	if projectType == "" {
@@ -46,7 +50,7 @@ func (l *Loader) Load() (Config, error) {
 		return Config{}, err
 	}
 
-	cfg, err := defaults(projectType)
+	cfg, err := loadDefaults(projectType, projectConfig.Name)
 	if err != nil {
 		return Config{}, err
 	}
@@ -136,7 +140,7 @@ func mergeConfig(dst *Config, src Config, allowManaged bool) error {
 			}
 
 			var ok bool
-			service, ok = serviceDefaults(dst.Type, name)
+			service, ok = serviceDefaults(dst.Type, dst.Name, name)
 			if !ok {
 				return fmt.Errorf(
 					"no defaults defined for service %q",
@@ -185,6 +189,13 @@ func mergeConfig(dst *Config, src Config, allowManaged bool) error {
 		}
 
 		dst.Services[name] = service
+	}
+
+	if src.Name != "" {
+		dst.Name = src.Name
+	}
+	if src.ProjectDir != "" {
+		dst.ProjectDir = src.ProjectDir
 	}
 
 	return nil

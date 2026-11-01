@@ -1,0 +1,37 @@
+name: testsystem
+services:
+  db:
+    container_name: testsystem-db
+    image: mysql:8.4
+    ports:
+      - "3306:3306"
+    environment:
+      - "MYSQL_DATABASE=symfony"
+      - "MYSQL_PASSWORD=mygento"
+      - "MYSQL_ROOT_PASSWORD=mygento"
+      - "MYSQL_USER=mygento"
+    volumes:
+      - testsystem-db:/var/lib/mysql
+  nginx:
+    container_name: testsystem-nginx
+    image: nginx:alpine
+    environment:
+      - "NGINX_USER=${USERID}"
+    volumes:
+      - .:/var/www/symfony:ro
+      - ./.workplace/runtime/nginx:/etc/nginx/sites-enabled:ro
+    ports:
+      - "8081:80"
+    depends_on:
+      - php
+  php:
+    container_name: testsystem-php
+    image: php:8.3-fpm
+    volumes:
+      - .:/var/www/symfony
+    environment:
+      - "PHPFPM_USER=${USERID}"
+    depends_on:
+      - db
+volumes:
+  testsystem-db: {}

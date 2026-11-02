@@ -11,6 +11,8 @@ builds:
   - main: ./...
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/mygento/workplace/cmd.version={{ .Version }}
     goos:
       - linux
       - darwin
@@ -25,7 +27,7 @@ archives:
 nfpms:
   - file_name_template: '{{ .ConventionalFileName }}'
     id: packages
-    homepage: https://mygento.com
+    homepage: https://www.mygento.com
     description: Workplace CLI helps developers manage projects
     maintainer: NT <nikita@mygento.com>
     license: AGPL-3.0

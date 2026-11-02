@@ -7,3 +7,4 @@ goreleaser
 workplace
 package.json
 composer.json
+.workplace.yaml

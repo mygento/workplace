@@ -127,7 +127,7 @@ func renderCompose(cfg config.Config) ([]byte, error) {
 	}
 
 	document := composeDocument{
-		Name:     dockerProjectName(cfg),
+		Name:     cfg.Name,
 		Services: make(map[string]composeService),
 		Volumes:  make(map[string]composeVolume),
 	}

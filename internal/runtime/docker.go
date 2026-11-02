@@ -23,26 +23,6 @@ func NewDocker() *DockerRuntime {
 
 var invalidProjectName = regexp.MustCompile(`[^a-z0-9_-]+`)
 
-func dockerProjectName(cfg config.Config) string {
-	name := strings.ToLower(strings.TrimSpace(cfg.Name))
-	if name == "" {
-		name = filepath.Base(cfg.ProjectDir)
-	}
-
-	name = invalidProjectName.ReplaceAllString(name, "-")
-	name = strings.Trim(name, "-_")
-
-	if name == "" || name == "." {
-		name = "workplace"
-	}
-
-	if name[0] < 'a' || name[0] > 'z' {
-		name = "workplace-" + name
-	}
-
-	return name
-}
-
 func dockerRuntimeDir(cfg config.Config) string {
 	return filepath.Join(cfg.ProjectDir, ".workplace", "runtime")
 }
@@ -96,17 +76,12 @@ func (r *DockerRuntime) runCompose(
 
 	commandArgs := []string{
 		"compose",
-		"--project-name", dockerProjectName(cfg),
+		"--project-name", cfg.Name,
 		"--file", composePath,
 	}
 	commandArgs = append(commandArgs, args...)
 
-	return runCommandWithEnv(
-		ctx,
-		dockerCommandEnvironment(cfg),
-		"docker",
-		commandArgs...,
-	)
+	return RunCommand(ctx, "docker", commandArgs...)
 }
 
 func (r *DockerRuntime) Start(
@@ -139,7 +114,7 @@ func (r *DockerRuntime) Start(
 	if err != nil {
 		return fmt.Errorf(
 			"start Docker Compose project %q: %w: %s",
-			dockerProjectName(cfg),
+			cfg.Name,
 			err,
 			strings.TrimSpace(string(output)),
 		)
@@ -147,7 +122,7 @@ func (r *DockerRuntime) Start(
 
 	fmt.Printf(
 		"started Docker Compose project %q\n",
-		dockerProjectName(cfg),
+		cfg.Name,
 	)
 	return nil
 }
@@ -169,7 +144,7 @@ func (r *DockerRuntime) Stop(
 	if err != nil {
 		return fmt.Errorf(
 			"stop Docker Compose project %q: %w: %s",
-			dockerProjectName(cfg),
+			cfg.Name,
 			err,
 			strings.TrimSpace(string(output)),
 		)
@@ -177,7 +152,7 @@ func (r *DockerRuntime) Stop(
 
 	fmt.Printf(
 		"stopped Docker Compose project %q\n",
-		dockerProjectName(cfg),
+		cfg.Name,
 	)
 	return nil
 }
@@ -199,7 +174,7 @@ func (r *DockerRuntime) Delete(
 	if err != nil {
 		return fmt.Errorf(
 			"delete Docker Compose project %q: %w: %s",
-			dockerProjectName(cfg),
+			cfg.Name,
 			err,
 			strings.TrimSpace(string(output)),
 		)
@@ -215,7 +190,7 @@ func (r *DockerRuntime) Delete(
 
 	fmt.Printf(
 		"deleted Docker Compose project %q\n",
-		dockerProjectName(cfg),
+		cfg.Name,
 	)
 	return nil
 }

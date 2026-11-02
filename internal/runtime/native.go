@@ -331,7 +331,7 @@ func nativeProcessMatches(
 		return false
 	}
 
-	output, err := RunCommandOutput(
+	output, err := RunCommand(
 		ctx,
 		"ps",
 		"-p", strconv.Itoa(state.PID),

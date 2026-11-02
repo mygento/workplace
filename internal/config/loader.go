@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -37,6 +39,14 @@ func (l *Loader) Load() (Config, error) {
 	if projectConfig.Name == "" {
 		projectConfig.Name = filepath.Base(filepath.Clean(root))
 	}
+
+	projectConfig.Name = strings.ToLower(
+		regexp.MustCompile(`[^a-z0-9_-]+`).ReplaceAllString(
+			projectConfig.Name,
+			"-",
+		),
+	)
+	projectConfig.Name = strings.Trim(projectConfig.Name, "-_")
 
 	projectType := normalizeType(projectConfig.Type)
 	if projectType == "" {

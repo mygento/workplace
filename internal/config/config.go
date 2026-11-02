@@ -139,6 +139,7 @@ func serviceDefaults(projectType string, projectName string, name string) (Servi
 			Env: map[string]string{
 				"discovery.type":          "single-node",
 				"DISABLE_SECURITY_PLUGIN": "true",
+				"OPENSEARCH_JAVA_OPTS":    "-Xms256m -Xmx256m",
 			},
 			Volumes: []Volume{
 				{

@@ -16,6 +16,7 @@ services:
     image: opensearchproject/opensearch:3
     environment:
       - 'DISABLE_SECURITY_PLUGIN=true'
+      - 'OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m'
       - 'discovery.type=single-node'
     volumes:
       - demo-magento-elastic:/usr/share/opensearch/data

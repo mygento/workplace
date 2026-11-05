@@ -2,13 +2,12 @@ package runtime
 
 import (
 	"context"
+	// "encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/mygento/workplace/internal/config"
@@ -21,7 +20,15 @@ func NewDocker() *DockerRuntime {
 	return &DockerRuntime{}
 }
 
-var invalidProjectName = regexp.MustCompile(`[^a-z0-9_-]+`)
+// func debugConfig(config config.Config) {
+// 	data, err := json.MarshalIndent(config, "", "  ")
+// 	if err != nil {
+// 		fmt.Printf("Error printing config: %v\n", err)
+// 		return
+// 	}
+
+// 	fmt.Println(string(data))
+// }
 
 func dockerRuntimeDir(cfg config.Config) string {
 	return filepath.Join(cfg.ProjectDir, ".workplace", "runtime")
@@ -29,31 +36,6 @@ func dockerRuntimeDir(cfg config.Config) string {
 
 func dockerComposePath(cfg config.Config) string {
 	return filepath.Join(dockerRuntimeDir(cfg), "compose.yaml")
-}
-
-func dockerCommandEnvironment(cfg config.Config) []string {
-	env := os.Environ()
-
-	env = setEnvironmentValue(
-		env,
-		"USERID",
-		strconv.Itoa(os.Getuid()),
-	)
-
-	return env
-}
-
-func setEnvironmentValue(env []string, key, value string) []string {
-	prefix := key + "="
-	result := make([]string, 0, len(env)+1)
-
-	for _, entry := range env {
-		if !strings.HasPrefix(entry, prefix) {
-			result = append(result, entry)
-		}
-	}
-
-	return append(result, prefix+value)
 }
 
 func (r *DockerRuntime) runCompose(
@@ -81,7 +63,12 @@ func (r *DockerRuntime) runCompose(
 	}
 	commandArgs = append(commandArgs, args...)
 
-	return RunCommand(ctx, "docker", commandArgs...)
+	return RunCommand(
+		ctx,
+		userCommandEnvironment(),
+		"docker",
+		commandArgs...,
+	)
 }
 
 func (r *DockerRuntime) Start(

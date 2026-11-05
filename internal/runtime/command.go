@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -16,12 +17,42 @@ func SetVerbose(enabled bool) {
 	verbose = enabled
 }
 
+func userCommandEnvironment() []string {
+	return setEnvironmentValue(
+		os.Environ(),
+		"USERID",
+		strconv.Itoa(os.Getuid()),
+	)
+}
+
+func setEnvironmentValue(
+	env []string,
+	key string,
+	value string,
+) []string {
+	prefix := key + "="
+	result := make([]string, 0, len(env)+1)
+
+	for _, entry := range env {
+		if !strings.HasPrefix(entry, prefix) {
+			result = append(result, entry)
+		}
+	}
+
+	return append(result, prefix+value)
+}
+
 func RunCommand(
 	ctx context.Context,
+	env []string,
 	name string,
 	args ...string,
 ) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, name, args...)
+
+	if env != nil {
+		cmd.Env = env
+	}
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer

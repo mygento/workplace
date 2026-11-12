@@ -13,16 +13,30 @@ import (
 
 func TestRenderComposeFixtures(t *testing.T) {
 	tests := []struct {
-		name string
-		dir  string
+		name  string
+		dir   string
+		local string
 	}{
 		{
 			name: "symfony_basic",
 			dir:  "symfony/basic",
 		},
 		{
-			name: "magento",
+			name: "magento_basic",
 			dir:  "magento/basic",
+		},
+		{
+			name: "magento_override",
+			dir:  "magento/override",
+		},
+		{
+			name: "magento_redis",
+			dir:  "magento/redis",
+		},
+		{
+			name:  "magento_local_override",
+			dir:   "magento/local",
+			local: "config.local.yaml",
 		},
 	}
 
@@ -47,6 +61,29 @@ func TestRenderComposeFixtures(t *testing.T) {
 			)
 			if err := os.WriteFile(configPath, input, 0600); err != nil {
 				t.Fatalf("write project config: %v", err)
+			}
+
+			// Write optional local configuration.
+			if tt.local != "" {
+				localInput, err := os.ReadFile(
+					filepath.Join(fixtureDir, tt.local),
+				)
+				if err != nil {
+					t.Fatalf("read local config fixture: %v", err)
+				}
+
+				localDir := filepath.Join(projectDir, ".workplace")
+				if err := os.MkdirAll(localDir, 0755); err != nil {
+					t.Fatalf("create local config directory: %v", err)
+				}
+
+				localPath := filepath.Join(
+					localDir,
+					"config.local.yaml",
+				)
+				if err := os.WriteFile(localPath, localInput, 0600); err != nil {
+					t.Fatalf("write local config: %v", err)
+				}
 			}
 
 			// Use the same loader as cmd.withRuntime.

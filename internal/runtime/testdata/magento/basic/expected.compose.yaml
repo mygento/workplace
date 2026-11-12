@@ -13,9 +13,11 @@ services:
     volumes:
       - demo-magento-db:/var/lib/mysql
   elastic:
+    container_name: demo-magento-elastic
     image: opensearchproject/opensearch:3
     environment:
       - 'DISABLE_SECURITY_PLUGIN=true'
+      - 'OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m'
       - 'discovery.type=single-node'
     volumes:
       - demo-magento-elastic:/usr/share/opensearch/data
@@ -33,9 +35,11 @@ services:
       - php
   php:
     container_name: demo-magento-php
-    image: php:8.5-fpm
+    image: php:8.3-fpm
     environment:
-      - 'PHPFPM_USER=${USERID}'
+       - "CONFIG__DEFAULT__CATALOG__SEARCH__ENGINE=opensearch"
+       - "CONFIG__DEFAULT__CATALOG__SEARCH__OPENSEARCH_SERVER_HOSTNAME=elastic"
+       - "PHPFPM_USER=${USERID}"
     volumes:
       - .:/var/www/magento2
     depends_on:

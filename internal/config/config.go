@@ -111,7 +111,7 @@ func serviceDefaults(projectType string, projectName string, name string) (Servi
 
 	case "mysql":
 		return Service{
-			Image: "mysql:8.4",
+			Image: "percona/percona-server:8.0",
 			Port:  intPtr(3306),
 			Env: map[string]string{
 				"MYSQL_DATABASE":      projectType,
@@ -182,7 +182,10 @@ func loadDefaults(projectType string, projectName string) (Config, error) {
 	switch projectType {
 	case "magento2":
 		service, _ := serviceDefaults(projectType, projectName, "elastic")
+		service.ContainerName = projectName + "-elastic"
 		services["elastic"] = service
+		services["php"].Env["CONFIG__DEFAULT__CATALOG__SEARCH__ENGINE"] = "opensearch"
+		services["php"].Env["CONFIG__DEFAULT__CATALOG__SEARCH__OPENSEARCH_SERVER_HOSTNAME"] = "elastic"
 		return Config{
 			Type:     projectType,
 			Services: services,

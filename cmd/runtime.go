@@ -12,6 +12,7 @@ import (
 func withRuntime(
 	cmd *cobra.Command,
 	action string,
+	args ...string,
 ) error {
 	dir, err := cmd.Flags().GetString("dir")
 	if err != nil {
@@ -28,15 +29,18 @@ func withRuntime(
 		return fmt.Errorf("load project configuration: %w", err)
 	}
 
-	var runtime workplaceruntime.Runtime
+	var rt workplaceruntime.Runtime
 
 	switch strings.ToLower(strings.TrimSpace(runtimeName)) {
 	case "docker":
-		runtime = workplaceruntime.NewDocker()
+		rt = workplaceruntime.NewDocker()
+
 	case "apple-container":
-		runtime = workplaceruntime.NewApple()
+		rt = workplaceruntime.NewApple()
+
 	case "native":
-		runtime = workplaceruntime.NewNative()
+		rt = workplaceruntime.NewNative()
+
 	default:
 		return fmt.Errorf(
 			"unknown runtime %q; supported runtimes: docker, apple-container, native",
@@ -46,11 +50,47 @@ func withRuntime(
 
 	switch action {
 	case "start":
-		return runtime.Start(cmd.Context(), cfg)
+		return rt.Start(cmd.Context(), cfg)
+
 	case "stop":
-		return runtime.Stop(cmd.Context(), cfg)
+		return rt.Stop(cmd.Context(), cfg)
+
 	case "delete":
-		return runtime.Delete(cmd.Context(), cfg)
+		return rt.Delete(cmd.Context(), cfg)
+
+	case "logs":
+		logsRuntime, ok := rt.(workplaceruntime.LogsRuntime)
+		if !ok {
+			return fmt.Errorf(
+				"logs are not supported by runtime %q",
+				runtimeName,
+			)
+		}
+
+		follow, err := cmd.Flags().GetBool("follow")
+		if err != nil {
+			return err
+		}
+
+		tail, err := cmd.Flags().GetString("tail")
+		if err != nil {
+			return err
+		}
+
+		timestamps, err := cmd.Flags().GetBool("timestamps")
+		if err != nil {
+			return err
+		}
+
+		return logsRuntime.Logs(
+			cmd.Context(),
+			cfg,
+			args,
+			follow,
+			tail,
+			timestamps,
+		)
+
 	default:
 		return fmt.Errorf("unknown runtime action %q", action)
 	}

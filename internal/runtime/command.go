@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -16,12 +17,42 @@ func SetVerbose(enabled bool) {
 	verbose = enabled
 }
 
+func userCommandEnvironment() []string {
+	return setEnvironmentValue(
+		os.Environ(),
+		"USERID",
+		strconv.Itoa(os.Getuid()),
+	)
+}
+
+func setEnvironmentValue(
+	env []string,
+	key string,
+	value string,
+) []string {
+	prefix := key + "="
+	result := make([]string, 0, len(env)+1)
+
+	for _, entry := range env {
+		if !strings.HasPrefix(entry, prefix) {
+			result = append(result, entry)
+		}
+	}
+
+	return append(result, prefix+value)
+}
+
 func RunCommand(
 	ctx context.Context,
+	env []string,
 	name string,
 	args ...string,
 ) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, name, args...)
+
+	if env != nil {
+		cmd.Env = env
+	}
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -36,7 +67,6 @@ func RunCommand(
 	}
 
 	err := cmd.Run()
-
 	output := append(stdout.Bytes(), stderr.Bytes()...)
 
 	if err != nil {
@@ -48,6 +78,38 @@ func RunCommand(
 	}
 
 	return output, nil
+}
+
+// Run Interactive Command connects the command directly to the terminal.
+func RunInteractiveCommand(
+	ctx context.Context,
+	env []string,
+	name string,
+	args ...string,
+) error {
+	cmd := exec.CommandContext(ctx, name, args...)
+
+	if env != nil {
+		cmd.Env = env
+	}
+
+	if verbose {
+		fmt.Fprintf(os.Stderr, "+ %s\n", shellCommand(name, args))
+	}
+
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf(
+			"run command %q: %w",
+			name,
+			err,
+		)
+	}
+
+	return nil
 }
 
 func shellCommand(name string, args []string) string {

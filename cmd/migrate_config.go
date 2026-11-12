@@ -11,8 +11,12 @@ import (
 var migrateConfigCmd = &cobra.Command{
 	Use:   "migrate-config",
 	Short: "Migrate legacy package.json workplace configuration to YAML",
-	Long:  `Extract the workplace configuration from package.json and write it to .workplace.yaml.`,
-	Args:  cobra.NoArgs,
+	Long: `Extract the workplace configuration from package.json and write it
+to .workplace.yaml.
+
+If .workplace/config.local.json exists, migrate it to
+.workplace/config.local.yaml.`,
+	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dir, err := cmd.Flags().GetString("dir")
 		if err != nil {
@@ -26,19 +30,25 @@ var migrateConfigCmd = &cobra.Command{
 
 		result, err := environment.MigrateConfig(dir, overwrite)
 		if err != nil {
-			if errors.Is(err, environment.ErrTargetConfigExists) {
+			switch {
+			case errors.Is(err, environment.ErrTargetConfigExists):
 				return fmt.Errorf(
 					".workplace.yaml already exists; inspect it first or use --overwrite",
 				)
-			}
 
-			if errors.Is(err, environment.ErrLegacyConfigNotFound) {
+			case errors.Is(err, environment.ErrLocalConfigExists):
+				return fmt.Errorf(
+					".workplace/config.local.yaml already exists; inspect it first or use --overwrite",
+				)
+
+			case errors.Is(err, environment.ErrLegacyConfigNotFound):
 				return fmt.Errorf(
 					"no legacy workplace configuration found in package.json",
 				)
-			}
 
-			return err
+			default:
+				return err
+			}
 		}
 
 		out := cmd.OutOrStdout()
@@ -46,12 +56,15 @@ var migrateConfigCmd = &cobra.Command{
 		if _, err := fmt.Fprintln(out, "Configuration migrated successfully."); err != nil {
 			return err
 		}
+
 		if _, err := fmt.Fprintf(out, "Source:       %s\n", result.Source); err != nil {
 			return err
 		}
+
 		if _, err := fmt.Fprintf(out, "Destination:  %s\n", result.Destination); err != nil {
 			return err
 		}
+
 		if _, err := fmt.Fprintf(out, "Project type: %s\n", result.Type); err != nil {
 			return err
 		}
@@ -64,8 +77,11 @@ func init() {
 	migrateConfigCmd.Flags().StringP(
 		"dir", "d", ".", "Project directory",
 	)
+
 	migrateConfigCmd.Flags().Bool(
-		"overwrite", false, "Overwrite an existing .workplace.yaml",
+		"overwrite",
+		false,
+		"Overwrite existing YAML configuration files",
 	)
 
 	rootCmd.AddCommand(migrateConfigCmd)

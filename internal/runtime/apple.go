@@ -38,7 +38,12 @@ func appleCommand(
 		shellCommand("container", args),
 	)
 
-	return RunCommand(ctx, "container", args...)
+	return RunCommand(
+		ctx,
+		userCommandEnvironment(),
+		"container",
+		args...,
+	)
 }
 
 func appleCommandJSON[T any](
@@ -723,16 +728,6 @@ func appleEnsureVolume(
 	}
 
 	return nil
-}
-
-// appleContainerPort uses Compose's canonical service-to-port mapping.
-func appleContainerPort(name string) (string, bool) {
-	port, ok := composeContainerPort(name)
-	if !ok {
-		return "", false
-	}
-
-	return strconv.Itoa(port), true
 }
 
 func appleMount(

@@ -1,0 +1,5 @@
+name: demo-magento
+type: magento2
+services:
+  redis: 
+    image: redis:alpine

@@ -333,6 +333,7 @@ func nativeProcessMatches(
 
 	output, err := RunCommand(
 		ctx,
+		nil,
 		"ps",
 		"-p", strconv.Itoa(state.PID),
 		"-o", "command=",

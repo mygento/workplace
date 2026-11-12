@@ -150,13 +150,14 @@ func mergeConfig(dst *Config, src Config, allowManaged bool) error {
 			}
 
 			var ok bool
-			service, ok = serviceDefaults(dst.Type, dst.Name, name)
+			service, ok = serviceDefaults(src.Type, src.Name, name)
 			if !ok {
 				return fmt.Errorf(
 					"no defaults defined for service %q",
 					name,
 				)
 			}
+			service.ContainerName = src.Name + "-" + name
 		}
 
 		if override.Image != "" {

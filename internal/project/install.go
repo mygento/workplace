@@ -13,7 +13,7 @@ func Install(projectDir, projectType string) error {
 		return err
 	}
 
-	dir := filepath.Join(projectDir, ".workplace", "nginx")
+	dir := filepath.Join(projectDir, ".workplace", "runtime", "nginx")
 
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("create nginx directory: %w", err)

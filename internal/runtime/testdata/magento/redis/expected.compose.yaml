@@ -23,7 +23,7 @@ services:
       - demo-magento-elastic:/usr/share/opensearch/data
   nginx:
     container_name: demo-magento-nginx
-    image: nginx:alpine
+    image: ghcr.io/luckyraul/nginx:backports
     environment:
       - 'NGINX_USER=${USERID}'
     ports:

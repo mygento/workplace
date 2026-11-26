@@ -14,7 +14,7 @@ services:
       - testsystem-db:/var/lib/mysql
   nginx:
     container_name: testsystem-nginx
-    image: nginx:alpine
+    image: ghcr.io/luckyraul/nginx:backports
     environment:
       - "NGINX_USER=${USERID}"
     volumes:

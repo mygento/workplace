@@ -18,8 +18,6 @@ var (
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			workplaceruntime.SetVerbose(verbose)
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-		},
 	}
 )
 

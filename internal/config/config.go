@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -87,7 +88,7 @@ func serviceDefaults(projectType string, projectName string, name string) (Servi
 
 	case "nginx":
 		return Service{
-			Image: "nginx:alpine",
+			Image: "ghcr.io/luckyraul/nginx:backports",
 			Port:  intPtr(8081),
 			Env: map[string]string{
 				"NGINX_USER": "${USERID}",
@@ -217,7 +218,22 @@ func loadCommonServices(projectType string, projectName string, services map[str
 }
 
 func configPath(projectDir string) string {
-	return filepath.Join(projectDir, ".workplace.yaml")
+	yamlPath := filepath.Join(projectDir, ".workplace.yaml")
+	ymlPath := filepath.Join(projectDir, ".workplace.yml")
+
+	if _, err := os.Stat(yamlPath); err == nil {
+		return yamlPath
+	}
+
+	if _, err := os.Stat(ymlPath); err == nil {
+		if err := os.Rename(ymlPath, yamlPath); err == nil {
+			return yamlPath
+		}
+
+		return ymlPath
+	}
+
+	return yamlPath
 }
 
 func localConfigPath(projectDir string) string {
